@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+	<title>Prime</title>
+	<link rel="stylesheet" href="design.css" />
+</head>
+
+<body>
+	<input id="input" type="text"></input>
+	<button onclick="primeOf();"> Prime! </button>
+	<div id="output"></div>
+
+	<div id="kontrolle"></div>
+
+	<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript">
+		var primeOf = function() {
+			$("#kontrolle").html("");
+			var start = Date.now();
+			var number = $("#input").val();
+
+			// Fast version
+			for (var i = 2; i <= number; i += 1) {
+				while (number % i == 0) {
+					$("#kontrolle").append(i + " ");
+					number = number / i;
+				}
+			}
+
+			// Slower version
+			/*for(var i = parseInt(number / 2); i >= 1; i--) {
+				if(number % i == 0) {
+					$("#kontrolle").append((number / i) + " ");
+					number = i;
+					i = parseInt(number / 2);
+					i++;
+				}
+			}*/
+
+			var end = Date.now();
+			$("#kontrolle").append("</br> Time: " + (end - start) + " sec");
+		}
+	</script>
+</body>
+</html>

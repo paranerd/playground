@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+<head>
+	<title>Bounce</title>
+	<style>
+		body {
+			background-color: white;
+		}
+
+		#canvas {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 960px;
+			height: 500px;
+			border: 1px solid black;
+		}
+
+		#lifes {
+			position: absolute;
+			top: 30px;
+			left: 40px;
+			font-size: 32px;
+			color: #555;
+		}
+	</style>
+</head>
+
+<body>
+	<canvas id="canvas" width="960" height="500">
+		Canvas not supported
+	</canvas>
+
+	<script type="text/javascript">
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+
+		var GRAVITY = 9.81;
+		var FRICTION = 0.75;
+		var balls = [];
+
+		window.onload = function() {
+			//var ball = new Ball();
+			//balls.push(ball);
+		}
+		
+		var start = {x: 0, y: 0};
+		document.onmousedown = function(e) {
+			start.x = e.clientX;
+			start.y = e.clientY;
+		}
+		document.onmouseup = function(e) {
+			var ball = new Ball(e.clientX, e.clientY, (e.clientX - start.x) * 0.2, (e.clientY - start.y) * 0.2);
+			balls.push(ball);
+		}
+
+		function Ball(x, y, velX, velY) {
+			this.x = x;
+			this.y = y;
+			this.size = 10;
+			this.velocity = {x: velX, y: velY};
+		}
+
+		Ball.prototype = {
+			move: function() {
+				this.velocity.y = this.velocity.y + GRAVITY * 0.1;
+				this.velocity.x *= 0.97;
+				this.x += this.velocity.x;
+				this.y += this.velocity.y;
+				
+				if(this.x + this.size > canvas.width) {
+					this.velocity.x = -this.velocity.x * FRICTION;
+					this.x = canvas.width - this.size;
+				}
+				if(this.x < 0) {
+					this.velocity.x = -this.velocity.x * FRICTION;
+					this.x = 0;
+				}
+				if(this.y + this.size >= canvas.height) {
+					this.velocity.y = -this.velocity.y * FRICTION;
+					this.y = canvas.height - this.size;
+				}
+				if(this.y < 0) {
+					this.velocity.y = -this.velocity.y * FRICTION;
+					this.y = 0;
+				}
+			}
+		}
+
+		setInterval(function() {
+			balls.forEach(function(ball) {
+				ball.move();
+			});
+			draw();
+		}, 25);
+
+		var draw = function() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			// Balls
+			for(var i = 0; i < balls.length; i++) {
+				ctx.fillStyle = "grey";
+				ctx.beginPath();
+				ctx.arc(balls[i].x + balls[i].size / 2, balls[i].y + balls[i].size / 2, balls[i].size / 2, 0, 2 * Math.PI);
+				ctx.fill();
+			}
+		}
+	</script>
+
+</body>
+</html>

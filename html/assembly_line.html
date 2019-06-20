@@ -1,0 +1,249 @@
+<!doctype html>
+<html>
+<head>
+	<title>Assembly Line</title>
+	<style>
+		body {
+			background-color: white;
+		}
+
+		#canvas {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 960px;
+			height: 480px;
+			border: 1px solid black;
+		}
+
+		#lifes {
+			position: absolute;
+			top: 30px;
+			left: 40px;
+			font-size: 32px;
+			color: #555;
+		}
+	</style>
+</head>
+
+<body>
+	<canvas id="canvas" width="960" height="480">
+		Canvas not supported
+	</canvas>
+
+	<div id="lifes"> &#9829; &#9829; &#9829; </div>
+
+	<script type="text/javascript">
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+
+		var currLevel = 1;
+		var level = {
+			1: [[255, 100], [100, 100]]
+		}
+
+		var wind = 6;
+		var gravity = 0.81;
+
+		var board = {
+			x: 300,
+			y: 50,
+			height: 20,
+			width: 250,
+		}
+
+		var balls = [];
+		var Ball = function(x, y, size, velX, velY) {
+			this.x = x;
+			this.y = y;
+			this.width = size;
+			this.height = size;
+			this.velocity = {x: velX, y: velY};
+		}
+
+		var blocks = [];
+		var Block = function(x, y, width) {
+			this.x = x;
+			this.y = y;
+			this.width = width;
+			this.height = 100;
+			this.lineWidth = 10;
+			this.velocity = {x: 1, y: 0};
+			this.parts = [	{x: this.x, y: this.y, width: this.lineWidth, height: this.height},
+					{x: this.x, y: this.y + this.height, width: this.width, height: this.lineWidth},
+					{x: this.x + this.width - this.lineWidth, y: this.y, width: this.lineWidth, height: this.height}];
+
+			this.update = function(dt) {
+				for(var i = 0; i < this.parts.length; i++) {
+					var part = this.parts[i];
+					part.x += dt;
+				}
+			};
+
+			this.draw = function() {
+				ctx.fillStyle = "grey";
+				for(var i = 0; i < this.parts.length; i++) {
+					var part = this.parts[i];
+					ctx.fillRect(part.x, part.y, part.width, part.height);
+				}
+			};
+		}
+
+		function loadLevel(stage) {
+			var l = level[stage];
+			for(var i = 0; i < l.length; i++) {
+				var block = new Block(l[i][0], canvas.height - 80 - 110, l[i][1]);
+				blocks.push(block);
+			}
+		}
+
+		window.onload = function() {
+			loadLevel(1);
+			animate();
+		}
+
+		document.onmousedown = function(e) {
+			wind = Math.abs(Math.random() * 5);
+			var ball = new Ball(board.x + board.width / 2, board.y + board.height, 20, wind, 0);
+			balls.push(ball);
+		}
+
+		document.onmousemove = function(e) {
+			board.x = e.pageX - board.width / 2;
+			if(board.x + board.width > canvas.width) {
+				board.x = canvas.width - board.width;
+			}
+			for(var i = 0; i < balls.length; i++) {
+				if(balls[i].atBoard) {
+					balls[i].x = board.x + balls[i].atBoard;
+				}
+			}
+		}
+
+		function collide(ent1, ent2) {
+			if(ent1.x + ent1.width >= ent2.x && ent1.x <= ent2.x + ent2.width &&
+				ent1.y + ent1.height >= ent2.y && ent1.y <= ent2.y + ent2.height)
+			{
+				var bottom_diff = ent2.y + ent2.height - ent1.y;
+				var top_diff = ent1.y + ent1.height - ent2.y;
+				var left_diff = ent1.x + ent1.width - ent2.x;
+				var right_diff = ent2.x + ent2.width - ent1.x;
+
+				var coll = {bottom: false, right: false, left: false, top: false};
+
+				coll.bottom = top_diff < bottom_diff && top_diff < left_diff && top_diff < right_diff;
+				coll.right = left_diff < right_diff && left_diff < top_diff && left_diff < bottom_diff;
+				coll.left = right_diff < left_diff && right_diff < top_diff && right_diff < bottom_diff;
+				coll.top = bottom_diff < top_diff && bottom_diff < left_diff && bottom_diff < right_diff;
+
+				return coll;
+			}
+			return false;
+		}
+
+		var animate = function() {
+			setInterval(function() { update(); }, 16);
+			setInterval(function() { draw(); }, 30);
+		}
+
+		var update = function() {
+			// Move blocks
+			for(var i = 0; i < blocks.length; i++) {
+				blocks[i].update(blocks[i].velocity.x);
+			}
+
+			// Check collisions
+			for(var i = 0; i < balls.length; i++) {
+				var ball = balls[i];
+
+				// Update position
+				ball.velocity.y += gravity * 0.1;
+				ball.x += ball.velocity.x;
+				ball.y += ball.velocity.y;
+
+				// Ball leaves canvas
+				if(balls[i].x > canvas.width) {
+					balls.splice(i, 1);
+				}
+
+				// Ball vs. Blocks
+				for(var j = 0; j < blocks.length; j++) {
+					for(var x = 0; x < blocks[j].parts.length; x++) {
+						var part = blocks[j].parts[x];
+						var collision = collide(balls[i], part);
+
+						if(collision) {
+							if(collision.bottom) {
+								ball.velocity.x = blocks[j].velocity.x;
+								ball.velocity.y = 0;
+								ball.y = part.y - ball.height - 1;
+							}
+							if(collision.left) {
+								ball.velocity.x *= -1;
+								ball.x = part.x + part.width;
+							}
+							if(collision.right) {
+								ball.velocity.x *= -1;
+								ball.x = part.x - ball.width;
+							}
+						}
+					}
+				}
+
+				// Ball missed the buckets
+				if(ball.y + ball.height >= canvas.height - 80) {
+					ball.y = canvas.height - 80 - ball.height;
+					ball.velocity.y = 0;
+					ball.velocity.x = 0;
+				}
+			}
+		}
+
+		var draw = function() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			var cornerRadius = 10;
+			ctx.lineJoin = "round";
+			ctx.lineWidth = cornerRadius;
+
+			// Line
+			ctx.beginPath();
+			ctx.arc(50, canvas.height - 40, 30, 0, 2 * Math.PI);
+			ctx.stroke();
+
+			ctx.beginPath();
+			ctx.arc(canvas.width - 50, canvas.height - 40, 30, 0, 2 * Math.PI);
+			ctx.stroke();
+
+			ctx.moveTo(0, canvas.height - 80);
+			ctx.lineTo(canvas.width, canvas.height - 80);
+			ctx.stroke();
+
+			// Level
+			for(var i = 0; i < blocks.length; i++) {
+				blocks[i].draw();
+				/*ctx.beginPath();
+				ctx.moveTo(blocks[i].x, blocks[i].y);
+				ctx.lineTo(blocks[i].x, blocks[i].y + blocks[i].height);
+				ctx.lineTo(blocks[i].x + blocks[i].width, blocks[i].y + blocks[i].height);
+				ctx.lineTo(blocks[i].x + blocks[i].width, blocks[i].y);
+				ctx.stroke();*/
+			}
+
+			// Balls
+			for(var i = 0; i < balls.length; i++) {
+				ctx.fillStyle = "grey";
+				ctx.beginPath();
+				ctx.arc(balls[i].x + balls[i].width / 2, balls[i].y + balls[i].height / 2, balls[i].width / 2, 0, 2 * Math.PI);
+				ctx.fill();
+			}
+
+			// Board
+			ctx.strokeStyle = "grey";
+			ctx.strokeRect(board.x + (cornerRadius / 2), board.y + (cornerRadius / 2), board.width - cornerRadius, board.height - cornerRadius);
+			ctx.fillStyle = "grey";
+			ctx.fillRect(board.x + (cornerRadius / 2), board.y + (cornerRadius / 2), board.width - cornerRadius, board.height - cornerRadius);
+		}
+	</script>
+
+</body>
+</html>

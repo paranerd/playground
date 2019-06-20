@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<head>
+	<title>Move</title>
+</head>
+
+<body>
+	<div id="kontrolle" style="position: absolute; top: 50px; left: 50px; width: 1000px; height: 40px; background-color: brown; border-radius: 2px;"></div>
+
+	<script type="text/javascript">
+		var down = false;
+		var kontrolle = document.getElementById("kontrolle");
+		var interval;
+
+		document.onmousedown = function(e) {
+			down = true;
+			clearTimeout(interval);
+			startAnimation(kontrolle, e.clientX, e.clientY, 50, 150, 150);
+			//$("#kontrolle").animate({"left" : e.clientX, "top" : e.clientY, "height" : "50px", "width" : "150px"}, 1500);
+		};
+
+		document.onmouseup = function(e) {
+			down = false;
+			clearTimeout(interval);
+			startAnimation(kontrolle, 50, 50, 40, 1000, 150);
+			//$("#kontrolle").animate({"left" : "50px", "top" : "50px", "height" : "40px", "width" : "1000px"}, 1500);
+		};
+
+		document.onmousemove = function(e) {
+			if(down) {
+				kontrolle.style.left = e.clientX + "px";
+				kontrolle.style.top = e.clientY + "px";
+			}
+		};
+		
+		function startAnimation(elem, left, top, height, width, time) {
+			var counter = 0;
+			var heightDiff = (height - parseFloat(elem.style.height)) / time;
+			var widthDiff = (width - parseFloat(elem.style.width)) / time;
+			var leftDiff = (left - parseFloat(elem.style.left)) / time;
+			var topDiff = (top - parseFloat(elem.style.top)) / time;
+			
+			interval = setInterval(function() {
+				counter++;
+				animate(elem, leftDiff, topDiff, heightDiff, widthDiff, time);
+
+				if(counter == time) {
+					clearTimeout(interval);
+				}
+			}, 1);
+		}
+		
+		function animate(elem, leftDiff, topDiff, heightDiff, widthDiff, time) {
+			elem.style.left = parseFloat(elem.style.left.slice(0, -2)) + parseFloat(leftDiff) + "px";
+			elem.style.top = parseFloat(elem.style.top.slice(0, -2)) + parseFloat(topDiff) + "px";
+			elem.style.height = parseFloat(elem.style.height.slice(0, -2)) + parseFloat(heightDiff) + "px";
+			elem.style.width = parseFloat(elem.style.width.slice(0, -2)) + parseFloat(widthDiff) + "px";
+		}
+	</script>
+</body>
+</html>

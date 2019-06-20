@@ -1,0 +1,35 @@
+<html>
+<body>
+<b>fett</b>
+<div id="kontrolle"></div>
+<script>
+	var string = "bold: *bold* - italic: _italic_ - crossed out: ~crossed~";
+
+	// Bold
+	string = replaceEveryNth(string, "*", "</b>", 2);
+	string = replaceEveryNth(string, "*", "<b>", 1);
+
+	// Italic
+	string = replaceEveryNth(string, "_", "</i>", 2);
+	string = replaceEveryNth(string, "_", "<i>", 1);
+
+	// Crossed out
+	string = replaceEveryNth(string, "~", "</s>", 2);
+	string = replaceEveryNth(string, "~", "<s>", 1);
+	kontrolle.innerHTML = string;
+
+	function replaceEveryNth(string, needle, replaceWith, n) {
+		var foundAt = n + 1;
+		for (var i = 0; i < string.length; i++) {
+			if (string.charAt(i) == needle) {
+				if (foundAt % n == 0) {
+					string = string.substr(0, i) + replaceWith + string.substr(i+1, string.length);
+				}
+				foundAt++;
+			}
+		}
+		return string;
+	}
+</script>
+</body>
+</html>

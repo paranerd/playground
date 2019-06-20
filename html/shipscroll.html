@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title> Ship | Scroll </title>
+</head>
+
+<body style="margin-top: 0px; margin-left: 0px">
+	<canvas id="canvas" width="1000" height="500"></canvas><br>
+	<button id="zoomin">Zoom in</button>
+	<button id="zoomout">Zoom out</button>
+
+	<script>
+		var ORIGGRIDSIZE = 50;
+		var gridsize = ORIGGRIDSIZE;
+		var zoomfactor = 1;
+
+		var ctx = canvas.getContext('2d');
+
+		var ship = {
+			x: 0,
+			y: 0,
+			movingX: false,
+			movingY: false,
+			targetX: 0,
+			targetY: 0,
+			diagonal: true,
+			size: gridsize,
+			
+			move: function() {
+				if(this.movingX || this.diagonal) {
+					if(this.x < this.targetX) {
+						this.x++;
+					}
+					else if(this.x > this.targetX) {
+						this.x--;
+					}
+					else {
+						this.movingX = false;
+						if (this.y != this.targetY) {
+							this.movingY = true;
+						}
+					}
+				}
+				if (this.movingY || this.diagonal) {
+					if (this.y < this.targetY) {
+						this.y++;
+					}
+					else if (this.y > this.targetY) {
+						this.y--;
+					}
+					else {
+						this.movingY = false;
+						if (this.x != this.targetX) {
+							this.movingX = true;
+						}
+					}
+				}
+			},
+			
+			adaptZoom: function(factor) {
+				this.x = this.x / factor;
+				this.y = this.y / factor;
+			}
+		}
+
+		function drawGrid() {
+			// Vertical Lines
+			for (var i = 0; i < canvas.width; i += gridsize) {
+				ctx.lineWidth = 1;
+				ctx.beginPath();
+				ctx.moveTo(i, 0);
+				ctx.lineTo(i, canvas.height);
+				ctx.stroke();
+			}
+
+			// Horizontal Lines
+			for (var i = 0; i < canvas.height; i += gridsize) {
+				ctx.lineWidth = 1;
+				ctx.beginPath();
+				ctx.moveTo(0, i);
+				ctx.lineTo(canvas.width, i);
+				ctx.stroke();
+			}
+		}
+
+		canvas.onmousedown = function(event) {
+			if(!ship.movingX && !ship.movingY) {
+				this.xArray = Math.floor((event.pageX) / gridsize);
+				this.yArray = Math.floor((event.pageY) / gridsize);
+
+				ship.targetX = this.xArray * ORIGGRIDSIZE;
+				ship.targetY = this.yArray * ORIGGRIDSIZE;
+
+				// Longest way first
+				if(Math.abs(this.xArray * gridsize - ship.x) >= Math.abs(this.yArray * gridsize - ship.y)) {
+					ship.movingY = true;
+				}
+				else {
+					ship.movingX = true;
+				}
+			}
+		}
+
+		zoomin.onclick = function(e) {
+			gridsize += 10;
+			zoomfactor = ORIGGRIDSIZE / gridsize;
+		}
+
+		zoomout.onclick = function(e) {
+			gridsize -= 10;
+			zoomfactor = ORIGGRIDSIZE / gridsize;
+		}
+
+		var draw = setInterval(function() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			ctx.fillStyle = 'rgba(30, 144, 255, 1)'; // lightblue
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+			
+			drawGrid();
+			ship.move();
+
+			// ship
+			ctx.fillStyle = 'green';
+			ctx.fillRect(ship.x / zoomfactor, ship.y / zoomfactor, gridsize, gridsize);
+
+		}, 10);
+	</script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<head>
+	<title>Scroll</title>
+	<style>
+		body {
+			margin: 0;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div id="small" style="position: absolute; top: 0; width: 200px; height: 41px; background-color: red;"></div>
+	<div id="big" style="position: absolute; width: 200px; height: 300px; border: 1px solid black;"></div>
+
+	<script type="text/javascript">
+		var offset = 0;
+		var scroll = false;
+		mouse_prev = 0;
+		var small = document.getElementById("small");
+		var interval;
+		
+		document.onmousedown = function(e) {
+			scroll = true;
+			mouse_prev = e.clientY;
+		}
+		
+		document.onmouseup = function(e) {
+			scroll = false;
+			offset = 0;
+			if(parseInt(small.style.top) < 0) {
+				startAnimation(small, -40, 100);
+			}
+		}
+		
+		document.onmousemove = function(e) {
+			if(!scroll) {
+				return;
+			}
+		
+			var diff = e.clientY - mouse_prev;
+			var top = parseInt(small.style.top);
+			var adj;
+		
+			offset = (offset <= 0) ? offset + diff : 0;
+			if(top >= -40 && top <= 0 && offset >= -40 && offset <= 0) {
+				adj = (top + diff < -40) ? '-40px' : (top + diff > 0) ? '0px' : top + diff + 'px';
+				small.style.top = adj;
+			}
+			mouse_prev = e.clientY;
+		}
+
+		function startAnimation(elem, top, time) {
+			var counter = 0;
+			var topDiff = (top - parseFloat(elem.style.top)) / time;
+			
+			interval = setInterval(function() {
+				counter++;
+				animate(elem, topDiff, time);
+
+				if(counter == time) {
+					clearTimeout(interval);
+				}
+			}, 1);
+		}
+		
+		function animate(elem, topDiff, time) {
+			elem.style.top = parseFloat(elem.style.top.slice(0, -2)) + parseFloat(topDiff) + "px";
+		}
+	</script>
+</body>
+</html>

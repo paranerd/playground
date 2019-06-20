@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+	<title>Halfscroll</title>
+	<style>
+		#upper {
+			position: fixed;
+			top: 100px;
+			height: 150px;
+			width: 10%;
+			background: linear-gradient(red, yellow);
+		}
+
+		#lower {
+			position: fixed;
+			top: 250px;
+			height: 150px;
+			width: 10%;
+			background-color: red;
+		}
+
+		#helper {
+			position: absolute;
+			top: 200px;
+			height: 1700px;
+			width: 100%;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="upper" style="top: 100px;"></div>
+	<div id="lower" style="top: 250px;"></div>
+	<div id="helper"></div>
+
+	<script type="text/javascript">
+		var upper = document.getElementById("upper");
+		var lower = document.getElementById("lower");
+
+		window.onscroll = function(event) {
+			var scroll = detectDirection();
+			
+			upper.style.top = parseFloat(upper.style.top.slice(0, -2)) + (scroll / 4) + "px";
+			lower.style.top = parseFloat(lower.style.top.slice(0, -2)) + (scroll / 2) + "px";
+		};
+
+		var lastScrollTop = 0;
+		var st;
+		var direction;
+
+		function detectDirection() {
+			st = window.pageYOffset;
+
+			var diff = lastScrollTop - st;
+			lastScrollTop = st;
+
+			return diff;
+		}
+	</script>
+</body>
+</html>

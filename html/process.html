@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+	<title>Process</title>
+</head>
+
+<body>
+	<div id="kontrolle">0%</div>
+
+	<script>
+		/** NOTES
+		 * Key down to increase percentage
+		 * Key up to stop increasing
+		 */
+
+		var percentage = 0;
+		var thing;
+		var run = false;
+		var kontrolle = document.getElementById("kontrolle");
+
+		document.onkeydown = function(e) {
+			if(!run) {
+				run = true;
+				start();
+			}
+		}
+
+		document.onkeyup = function(e) {
+			clearTimeout(thing);
+			run = false;
+		}
+
+		function start() {
+			thing = setInterval(function() {
+				percentage++;
+				kontrolle.innerHTML = percentage + "%";
+			}, 100);
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+	<title>Kasiski</title>
+</head>
+
+<body>
+	<input id="input" type="text" value="Text"></input>
+	<input id="lengthdiv" type="text" value="Length"></input>
+	<button onclick="kasiski();"> Search! </button>
+	<div id="output"></div>
+
+	<script type="text/javascript">
+		var distances = [];
+		var possFactors = [];
+		var eraseFactors = [];
+
+		var kasiski = function() {
+			output.innerHTML = "";
+			var text = input.value;
+			var length = lengthdiv.value;
+
+			var currString;
+
+			for(var i = 0; i <= text.length - length; i++) {
+				currString = text.substring(i, i + parseInt(length));
+				for(var j = i + parseInt(length); j <= text.length - length; j++) {
+					var compString = text.substring(j, j + parseInt(length));
+					if(currString == compString) {
+						output.innerHTML += "Found: " + compString + ", Dist: " + (j - i) + "</br>";
+						if(distances.indexOf((j - i)) == -1) {
+							distances.push((j - i));
+						}
+					}
+				}
+			}
+			output.innerHTML += "Distances: ";
+			for(var i = 0; i < distances.length; i++) {
+				output.innerHTML += distances[i] + ", ";
+				findFactors(distances[i]);
+			}
+
+			possFactors.sort(function(a,b){return a-b});
+
+			output.innerHTML += "</br></br> Factors: ";
+			for(var i = 0; i < possFactors.length; i++) {
+				output.innerHTML += possFactors[i] + ", ";
+			}
+
+			for(var i = 0; i < possFactors.length; i++) {
+				eraseFactors[i] = 0;
+				for(var k = 0; k < distances.length; k++) {
+					output.innerHTML += "</br>" + distances[k] + " % " + possFactors[i] + " = " + (distances[k] % possFactors[i]);
+					if(distances[k] % possFactors[i] != 0) {
+						eraseFactors[i]++;
+						//possFactors.splice(i, 1);
+						//i--;
+						break;
+					}
+				}
+			}
+
+			output.innerHTML += "</br></br>" + possFactors.length + " Factors filtered: </br>";
+			possFactors.sort(function(a,b){return a-b});
+
+			for(var i = 0; i < possFactors.length; i++) {
+				if(eraseFactors[i] < 2) {
+					output.innerHTML += possFactors[i] + ", ";
+				}
+			}
+		}
+
+		var findFactors = function(number) {
+			for(var i = 2; i < Math.floor(number / 2); i++) {
+				if(number % i == 0) {
+					if(possFactors.indexOf(i) == -1) {
+						possFactors.push(i);
+					}
+				}
+			}
+		}
+	</script>
+</body>
+</html>

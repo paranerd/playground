@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+	<title>Crypto</title>
+	<link rel="stylesheet" href="design.css" />
+</head>
+
+<body>
+	<input id="input" type="text" value="Text"></input>
+	<input id="key" type="text" value="Key"></input>
+	<button onclick="process(0);"> Encrypt </button>
+	<button onclick="process(1);"> Decrypt </button>
+	<div id="output"></div>
+
+	<div id="kontrolle"></div>
+
+	<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript">
+		var letters = [" ","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+
+		var process = function(mode) {
+			$("#output").html("");
+			$("#kontrolle").html("");
+			var text = $("#input").val();
+			var key = $("#key").val();
+			var indexForText = 0;
+			var indexForKey = 0;
+			var keyCount = 0;
+			var processed_letter;
+
+			for(var i = 0; i < text.length; i++) {
+				$("#kontrolle").append(text.charAt(i));
+				/*if(text.charAt(i) == " ") {
+					$("#output").append(" ");
+					continue;
+				}*/
+
+				indexForText = letters.indexOf(text.charAt(i));
+				indexForKey = letters.indexOf(key.charAt(keyCount));
+			
+				// Encrypt
+				if(mode == 0) {
+					processed_letter = letters[(indexForText + indexForKey) % letters.length];
+				}
+			
+				// Decrypt
+				else {
+					processed_letter = letters[(indexForText + letters.length - indexForKey) % letters.length];
+				}
+				$("#kontrolle").append(" --> " + indexForText + "|" + indexForKey + " " + processed_letter + "</br>");
+
+				$("#output").append(processed_letter);
+			
+				if(keyCount < key.length - 1) {
+					keyCount++;
+				}
+				else {
+					keyCount = 0;
+				}
+			}
+		}
+	</script>
+</body>
+</html>

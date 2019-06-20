@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+	<title>Racer</title>
+	<style>
+		body {
+			overflow: hidden;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="kontrolle" style="position: absolute; top: 0; left: 0;"></div>
+	<canvas id="canvas" width="640" height="480"></canvas>
+
+	<script>
+		var ctx = canvas.getContext('2d');
+
+		var car = {
+			x: 0,
+			y: 0,
+			speed: 0,
+			dir: 1, // 1 = right, -1 = left
+			FRICTION: 0.75,
+			ACCELERATOR: 0.5,
+			BREAK_IMPACT: 1,
+			MAX_SPEED: 15,
+			MAX_REW_SPEED: 5,
+			accelerating: false,
+			breaking: false,
+
+			updatePos: function() {
+				if(this.accelerating || this.breaking) {
+					kontrolle.innerHTML = this.dir;
+					if(this.breaking) {
+						if(this.dir == 1 && this.speed > 0) {
+							this.speed -= this.BREAK_IMPACT;
+						}
+						else if(this.speed <= this.MAX_REW_SPEED) {
+							this.dir = -1;
+							this.speed += this.ACCELERATOR;
+						}
+					}
+					else if(this.accelerating) {
+						if(this.dir == -1 && this.speed > 0) {
+							this.speed -= this.BREAK_IMPACT;
+						}
+						else if(this.speed <= this.MAX_SPEED) {
+							this.dir = 1;
+							this.speed += this.ACCELERATOR;
+						}
+					}
+				}
+				else {
+					this.speed -= this.FRICTION;			
+					if(this.speed <= 0) {
+						this.speed = 0;
+					}
+				}
+				this.x += this.speed * this.dir;
+				kontrolle.innerHTML = this.speed;
+			},
+
+			accelerate: function(value) {
+				if(this.breaking == false) {
+					this.accelerating = value;
+					this.breaking = false;
+				}
+			},
+
+			slowdown: function(value) {
+				if(this.accelerating == false) {
+					this.breaking = value;
+					this.accelerating = false;
+				}
+			}
+		}
+
+		// Keyboard
+		document.onkeydown = function(e) {
+			switch(e.keyCode) {
+				case 37: // Left Arrow
+					car.slowdown(true);
+					break;
+				case 39: // Right Arrow
+					car.accelerate(true);
+					break;
+			}
+		};
+		document.onkeyup = function(e) {
+			switch(e.keyCode) {
+				case 37: // Left Arrow
+					car.slowdown(false);
+					break;
+				case 39: // Right Arrow
+					car.accelerate(false);
+					break;
+			}
+		};
+
+		var Update = setInterval(function() {
+			car.updatePos();
+		},30);
+
+		var Draw = setInterval(function() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			ctx.fillStyle = "red";
+			ctx.fillRect(car.x, car.y, 50, 25);
+		},30);
+
+	</script>
+</body>
+</html>

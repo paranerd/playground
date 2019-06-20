@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> Welle </title>
+</head>
+
+<body onload="createBlocks();" style="margin-top: 0px; margin-left: 0px">
+<div id="kontrolle" style="position: absolute;"></div>
+
+<canvas id="playgroundCanvas" width="516" height="306"></canvas>
+
+<script>
+var GRIDSIZE = 50;
+var HEIGHT = 300;
+var MAXBLOCKS = 75;
+var BLOCKSPACE = 11;
+var DELTA = 40;
+var BLOCKSIZE = 10;
+
+/* ======
+   Canvas
+   ====== */
+
+var canvas = document.getElementById("playgroundCanvas");
+canvas.width = (BLOCKSIZE + BLOCKSPACE)*MAXBLOCKS;
+canvas.height = HEIGHT;
+
+var ctx = canvas.getContext('2d');
+
+/* =====
+   Block
+   ===== */
+Block = {
+    blocks: [],
+
+    create: function(x, y) {
+		this.x = x;
+		this.y = y;
+		this.dir = -DELTA;
+    }
+}
+
+function createBlocks() {
+    for(var i=0; i<MAXBLOCKS; i++) {
+		var block = new Block.create(i*BLOCKSPACE, 200);
+		Block.blocks.push(block);
+    }
+    move();
+}
+
+function move() {
+    var j = 0;
+    var bewegung = setInterval(function() {
+		for(var i=0; i<j; i++) {
+			var block = Block.blocks[i];
+			if(block.y < 100) {
+				block.dir = DELTA;
+			}
+			else if(block.y > HEIGHT) {
+				block.dir = -DELTA;
+			}
+			block.y += block.dir;
+		}
+
+		if(j < MAXBLOCKS) {
+			j++;
+		}
+    }, 50);
+}
+
+/* ====
+   Draw
+   ==== */
+
+var Draw = setInterval(function() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for(var i in Block.blocks) {
+		var block = Block.blocks[i];
+		if(block.dir<0) {
+			ctx.fillStyle = 'red';
+		}
+		else {
+			ctx.fillStyle = 'blue';
+		}
+		ctx.fillRect(block.x, block.y, BLOCKSIZE, BLOCKSIZE);
+    }
+}, 30);
+</script>
+</body>
+</html>

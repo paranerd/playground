@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+	<title>Cursor</title>
+</head>
+
+<body>
+	<div id="squareone" style="background-color: red; height: 50px; width: 50px;"></div>
+	<div id="squaretwo" style="background-color: blue; height: 50px; width: 50px; cursor: wait;"></div>
+
+	<script type="text/javascript">
+		var squareone = document.getElementById("squareone");
+		var squaretwo = document.getElementById("squaretwo");
+		
+		squareone.onmouseover = function() {
+			document.documentElement.style.cursor = "url(img/arrow.png),auto";
+		}
+	</script>
+</body>
+</html>

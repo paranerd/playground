@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+	<title>Tacho</title>
+</head>
+
+<body>
+	<div id="kontrolle"></div>
+
+	<div id="background" style="position: absolute; left: 0; width: 100%; background-color: black;"></div>
+	<canvas id="recorder" style="position: absolute; left: 0;"></canvas>
+	<canvas id="buffer" style="display:none;"></canvas>
+
+	<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript">
+		/* Bicycle
+		 * with one front-gear and five rear gears
+		 */
+
+		var speed = 0;
+		var max_speed = 1000;
+		var rotation_speed = 0;
+
+		var rps = 0; // Pedal revolutions per second
+		var mpr = 2; // Meters per revolution
+
+		var pedalGear = 100; // The front gear has 100 teeth
+		var rearGears = [10, 75, 100, 500, 1000]; // Gear teeth from highest to lowest
+		var currGear = 0;
+		var accelerate = -1;
+
+		var recHeight = 500;
+		var recWidth = $(window).innerWidth();
+		var canvas = document.getElementById("recorder");
+		var buffer = document.getElementById('buffer');
+		var ctx = canvas.getContext('2d');
+		canvas.width = window.innerWidth();
+		canvas.height = recHeight;
+
+		var canvasBottom = $("#recorder").offset().top;
+		var recPos = $(window).innerWidth() / 2;
+
+		$("#background").height(recHeight);
+		 
+		$(document).ready(function() {
+
+		});
+
+		document.onkeydown = function() {
+			accelerate = 1;
+		}
+
+		document.onkeyup = function() {
+			accelerate = -1;
+		}
+
+		var update = setInterval(function() {
+			rps = (rps > 0 || accelerate > 0) ? rps + accelerate : 0;
+			if(accelerate > 0 && rps >= 500 && currGear < rearGears.length - 1) {
+				currGear++;
+				rps = parseInt(speed / ((rearGears[currGear] / pedalGear) * mpr));
+			}
+			else if(accelerate < 0 && rps <= 100 && currGear > 0) {
+				currGear--;
+				rps = parseInt(speed / ((rearGears[currGear] / pedalGear) * mpr));
+			}
+			speed = parseInt(rps * (rearGears[currGear] / pedalGear) * mpr);
+
+			$("#kontrolle").html("Revolutions: " + rps + "</br>Gear: " + currGear + "</br>Speed: " + speed);
+			
+		}, 1000 / rps);
+
+		var draw = setInterval(function() {
+			buffer.width = canvas.width + 1;
+			buffer.height = recHeight;
+			buffer.getContext('2d').drawImage(canvas, 0, 0);
+			canvas.width = canvas.width + 1;
+			canvas.height = recHeight;
+			canvas.getContext('2d').drawImage(buffer, 0, 0);
+			$("#recorder").css('left', '-=1');
+
+			// Draw revolutions
+			var rpsPos = recHeight * (rps / max_speed);
+			ctx.fillStyle = 'limegreen';
+			ctx.fillRect(recPos, recHeight - rpsPos - 1, 1, 1);
+
+			// Draw speed
+			var speedPos = recHeight * (speed / max_speed);
+			ctx.fillStyle = 'red';
+			ctx.fillRect(recPos, recHeight - speedPos - 1, 2, 2);	
+
+			recPos++;
+		}, 100);
+	</script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+	<title>Morse Cracker</title>
+</head>
+
+<body>
+	<input id="input" type="text"></input>
+	<button onclick="decrypt();">Decrypt!</button>
+	<button id="bShow" style="display: none;" onclick="show();">Show!</button>
+	<button id="bCrack" style="display: none;" onclick="findWords();">Crack Words!</button>
+	<div id="output"></div>
+
+	<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript">
+		/* NOTES
+		 *
+		 * Am Beispiel von "-....-"
+		 * 1. Initialisieren
+		 *	Suchen aller möglichen Anfangsbuchstaben dieser Kombination
+		 *	Also t, n, d, b
+		 *	Eintrag im Array als ["t", "....-"], ["b", ".-"], usw.
+		 * 
+		 * 2. Decrypten
+		 *	Entfernt den ersten Eintrag im Array (["t", "....-"]), um an dessen Stelle
+		 *	die weiteren Kombinationen hinzuzufügen
+		 *	Die mittlere for-Schleife prüft die Länge der eingelesenen Zeichenkette (Buchstaben
+		 *	sind nicht länger, als 4 Zeichen, also i <= 4)
+		 *	Die innerste for-Schleife sucht in morse nach Übereinstimmenden Zeichenketten der
+		 *	Länge i und fügt sie dem possibles-Array hinzu (2-dimensionales Array, wobei
+		 *	[0] = Klartext und [1] = verbleibende Morse-Zeichen
+		 *	Da i immer weiter wächst, endet ein erster Durchlauf z.B. bei th-, denn h hat 4 Stellen
+		 *	und "-", also das "t", nur eine, daher muss ein neuer Durchlauf von i = 0 an gestartet werden
+		 *	Da die neuen Kombinationen an Stelle "x" in's Array gelesen werden, werden manche von ihnen
+		 *	beim nächsten Durchlauf der äußeren Schleife direkt wieder bearbeitet
+		 *	Die alles umschließende while-Schleife sorgt dafür, dass die Bearbeitung so lange durchgeführt
+		 *	wird, wie auch nur ein einziger Array-Eintrag etwas in [1] zu stehen hat
+		 *
+		 * 3.	Mit show() werden alle möglichen Kombinationen auf dem Bildschirm ausgegeben
+		 */
+
+		//var morse = [".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--", "-.", "---", ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--.."];
+		var morse = [".", "-", ".-", "..", "--", "-.", "-..", "--.", "-.-", "---", ".-.", "...", "..-", ".--", "-...", "-.-.", "..-.", "....", ".---", ".-..", ".--.", "--.-", "...-", "-..-", "-.--", "--.."];
+		//var letters = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
+		var letters = ["e", "t", "a", "i", "m", "n", "d", "g", "k", "o", "r", "s", "u", "w", "b", "c", "f", "h", "j", "l", "p", "q", "v", "x", "y", "z"];
+
+		var words = ["xyz", "te", "tsa", "nv", "nia"];
+		
+		var input = document.getElementById("input");
+		var output = document.getElementById("output");
+
+		var possibles;
+		var possWords = [];
+
+		var goOn;
+		var elapsed;
+
+		function decrypt() {
+			possibles = [];
+			goOn = true;
+			elapsed = 0;
+
+			var start = Date.now();
+			
+			output.innerHTML = "Calculating...";
+
+			var input = $("#input").val();
+			for(var i = 1; i < 5; i++) {
+				if(i > input.length) {
+					show();
+					break;
+				}
+
+				for(var j = 0; j < morse.length; j++) {
+					if(morse[j].length == i && morse[j] == input.substr(0, i)) {
+						var newPoss = [letters[j], input.substr(i, input.length)];
+						possibles.push(newPoss);
+					}
+				}
+			}
+
+			while(goOn) {
+				goOn = false;
+				for(var x = 0; x < possibles.length; x++) {
+					var input = possibles[x];
+					if(input[1] != "") {
+						possibles.splice(x, 1);
+						goOn = true;
+					}
+					else {
+						continue;
+					}
+					for(var i = 1; i <= 4; i++) {
+						if(i > input[1].length) {
+							break;
+						}
+						var testing = morse.indexOf(input[1].substr(0,i));
+						if(testing != -1) {
+							var newPoss = [input[0] + letters[testing], input[1].substr(i, input[1].length)];
+							possibles.splice(x, 0, newPoss);
+						}
+					}
+				}
+			}
+			elapsed = (Date.now() - start) / 1000;
+			output.innerHTML = "Found " + possibles.length + " combinations in " + elapsed + "s";
+			$("#bShow").fadeIn(0);
+			$("#bCrack").fadeIn(0);
+		}
+
+		function show() {
+			$("#output").empty();
+			for(var i = 0; i < possibles.length; i++) {
+				$("#output").append(possibles[i][0] + possibles[i][1] + "</br>");
+			}
+		}
+
+		function findWords() {
+			for(var i = 0; i < possibles.length; i++) {
+				for(var j = 0; j < words.length; j++) {
+					var wLength = words[j].length;
+					var pLength = possibles[i][0].length;
+					console.log("Checking " + possibles[i][0] + "|" + words[j]);
+					if(wLength <= pLength) {
+						if(possibles[i][0].indexOf(words[j]) != -1) {
+							possWords.push(possibles[i][0]);
+						}
+					}
+				}
+			}
+			displayWords();
+		}
+
+		function displayWords() {
+			$("#output").empty();
+			for(var i = 0; i < possWords.length; i++) {
+				$("#output").append(possWords[i] + "</br>");
+			}
+		}
+	</script>
+
+</body>
+</html>

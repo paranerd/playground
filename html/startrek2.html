@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+	<title>Star Trek</title>
+	<style>
+		.tile {
+			position: absolute;
+			left: 0;
+			top: 0;
+			height: 30px;
+			width: 5px;
+			background-color: red;
+		}
+	</style>
+</head>
+
+<body>
+	<script>
+		var tiles = [];
+		var maxtiles = 4;
+
+		window.onload = function() {
+			create(0);
+			setInterval(move, 500);
+			setInterval(create, 3000);
+		};
+
+		var create = function() {
+			var total = 0;
+			var int = setInterval(function() {
+				var total2 = 0;
+				var tile = document.createElement('div');
+				tile.id = total2;
+				tile.className = "tile";
+				tile.style.left = 0;
+				tile.style.top = 0;
+				
+				document.body.appendChild(tile);
+				
+				tiles.push(tile);
+				total++;
+
+				if(total == 4) {
+					clearTimeout(int);
+				}
+			}, 500);
+		}
+
+		var move = function() {
+			for(var i in tiles) {
+				var block = tiles[i];
+				var left = parseInt(block.style.left);
+				var top = parseInt(block.style.top);
+				
+				if (left < 100) {
+					block.style.left = parseInt(block.style.left) + 10 + "px";
+				}
+				else {
+					block.remove();
+				}
+			}
+		}
+	</script>
+</body>
+</html>

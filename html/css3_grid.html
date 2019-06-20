@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .grid {
+      display: grid;
+      height: 100vh;
+
+      grid-template-columns: 200px 1fr 200px;
+      grid-template-rows: 100px 1fr 100px;
+      grid-template-areas:
+        "header header header"
+        "main . sidebar"
+        "footer footer footer";
+    }
+
+    @media screen and (max-width: 800px) {
+      .grid {
+        grid-template-columns: 1fr 100px;
+        grid-template-rows: 100px 50px 1fr 100px;
+        grid-template-areas:
+          "header header"
+          "main main"
+          ". sidebar"
+          "footer footer"
+      }
+    }
+
+    #header {
+      grid-area: header;
+      background-color: green;
+    }
+
+    #main {
+      grid-area: main;
+      background-color: red;
+    }
+
+    #sidebar {
+      grid-area: sidebar;
+      background-color: blue;
+    }
+
+    #footer {
+      grid-area: footer;
+      background-color: darkgreen;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="grid">
+    <div id="header">Head</div>
+    <div id="main">Main</div>
+    <div id="sidebar">Sidebar</div>
+    <div id="footer">Footer</div>
+  </div>
+</body>
+
+</html>

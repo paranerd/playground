@@ -1,0 +1,48 @@
+<html>
+<head>
+	<style>
+		body {
+			margin: 0;
+		}
+		
+		#imageViewer {
+			position: absolute;
+			height: 100px;
+			width: 100px;
+			background-size: 100%;
+			background-repeat: no-repeat;
+			background-position: center;
+		}
+	</style>
+</head>
+<body onload="init();">
+	<div id="imageViewer"></div>
+	<script>
+		function init() {
+			var path = "img/arrow.png";
+			var img = new Image();
+			img.src = path;
+			img.onload = function() {
+				var size = resizeImg(img, document.body.clientHeight, document.body.clientWidth, 0.9);
+				var viewer = document.getElementById("imageViewer");
+				viewer.style.backgroundImage = "url(" + path + ")";
+				viewer.style.width = size.width;
+				viewer.style.height = size.height;
+				viewer.style.left = (document.body.clientWidth - parseInt(size.width)) / 2;
+				viewer.style.top = (document.body.clientHeight - parseInt(size.height)) / 2;
+			}
+		}
+		function resizeImg(img, target_height, target_width, ratio) {
+			var img_height = img.naturalHeight || img.height;
+			var img_width = img.naturalWidth || img.width;
+			if(img_height > target_height * ratio || img_width > target_width * ratio) {
+				var shrinkTo = Math.min(target_height / img_height, target_width / img_width);
+				return {width: img_width * shrinkTo * ratio + "px", height: img_height * shrinkTo * ratio + "px", shrink: shrinkTo};
+			}
+			else {
+				return {width: img_width + "px", height: img_height + "px", shrink: 1};
+			}
+		}
+	</script>
+</body>
+</html>

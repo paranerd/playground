@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+	<style>
+		/* Flip 1 */
+		#flip-container1 {
+			position: relative;
+			width: 100px;
+			height: 100px;
+			perspective: 1000px;
+		}
+
+		#flip-container1:hover #flip {
+			transition: 0.6s;
+			transform: rotateY(180deg);
+			transform-style: preserve-3d;
+		}
+
+		#flip {
+			width: 100%;
+			height: 100%;
+			background-color: red;
+			transition: 0.6s;
+			transform: rotateY(0deg);
+		}
+
+		/* Flip 2 */
+
+		#flip-container2 {
+			width: 100px;
+			height: 100px;
+		}
+
+		.flip {
+			transform: rotateY(-180deg);
+		}
+
+		.flip-container {
+			position: relative;
+			perspective: 1000px;
+		}
+
+		/* flip the pane when hovered */
+		.flip-container:hover .flipper, .flip-container.hover .flipper {
+			transform: rotateY(180deg);
+		}
+
+		/* flip speed goes here */
+		.flipper {
+			position: relative;
+			width: 100%;
+			height: 100%;
+			transition: 0.6s;
+			transform-style: preserve-3d;
+		}
+
+		/* hide back of pane during swap */
+		.front, .back {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			backface-visibility: hidden;
+		}
+
+		/* front pane, placed above back */
+		.front {
+			z-index: 2;
+			transform: rotateY(0deg);
+		}
+
+		/* back, initially hidden pane */
+		.back {
+			transform: rotateY(180deg);
+		}
+
+		#front {
+			background-color: red;
+		}
+
+		#back {
+			background-color: blue;
+		}
+
+		/* Zoom */
+
+		#zoomer {
+			height: 100px;
+			width: 100px;
+			background-color: green;
+			transition: width 1s, height 1s, transform 1s;
+			transition-delay: 0.2s;
+		}
+
+		#zoomer:hover {
+			width: 150px;
+			height: 150px;
+			transform: rotate(90deg);
+		}
+
+		/* Loader */
+
+		#loader-box {
+			position: relative;
+			height: 100px;
+			width: 100px;
+			border: 1px solid black;
+		}
+
+		#loader {
+			position: absolute;
+			width: 40%;
+			height: 40%;
+			background-color: #2e8b5e;
+			animation-name: load;
+			animation-duration: 2s;
+			animation-iteration-count: infinite;
+		}
+
+		@keyframes load {
+			0%		{opacity: 1; left: 0; top: 0;}
+			25%		{border-radius: 20px; opacity: 0.75; left: 60%; top: 0;}
+			50%		{border-radius: 0; opacity: 0.5; left: 60%; top: 60%;}
+			75%		{border-radius: 20px; opacity: 0.75; left: 0; top: 60%;}
+			100%	{opacity: 1; left: 0; top: 0;}
+		}
+
+		#xbox-note {
+			height: 50px;
+			border: 1px solid black;
+			display: none;
+			opacity: 0;
+		}
+
+		.xbox-note-icon {
+			height: 50px;
+			width: 50px;
+			background-color: red;
+			display: inline-block;
+		}
+
+		.xbox-note-msg {
+			height: 50px;
+			width: 0px;
+			line-height: 50px;
+			font-family: sans-serif;
+			display: inline-block;
+			overflow: hidden;
+		}
+
+		.xbox-note-unhide {
+			display: inline-block !important;
+			animation-name: unhide;
+			animation-duration: 1s;
+			animation-fill-mode: forwards;
+		}
+
+		@keyframes unhide {
+			100%	{opacity: 1;}
+		}
+
+		.xbox-note-unhide .xbox-note-msg {
+			animation-name: stretch;
+			animation-duration: 1s;
+			animation-delay: 0.5s;
+			animation-fill-mode: forwards;
+		}
+
+		@keyframes stretch {
+			100%	{width: 100px;}
+		}
+
+		.xbox-note-hide {
+			opacity: 1;
+			display: inline-block !important;
+			animation-name: hide;
+			animation-duration: 2s;
+			animation-fill-mode: forwards;
+		}
+
+		@keyframes hide {
+			0%	{opacity: 1;}
+			50%	{opacity: 1;}
+			100%	{opacity: 0;}
+		}
+
+		.xbox-note-hide .xbox-note-msg {
+			width: 100px;
+			animation-name: shrink;
+			animation-duration: 1s;
+			animation-fill-mode: forwards;
+		}
+
+		@keyframes shrink {
+			100%	{width: 0px;}
+		}
+
+		.overlay {
+			position: absolute;
+			top: -100%;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: #303030;
+			transition: top 1s;
+		}
+
+		.overlay-fade-in {
+			top: 0;
+		}
+	</style>
+</head>
+<body>
+	<div id="flip-container1">
+		<div id="flip">Flip me!</div>
+	</div>
+
+	<div id="flip-container2" class="flip-container" ontouchstart="this.classList.toggle('hover');">
+		<div class="flipper">
+			<div id="front" class="front">
+				<!-- front content -->
+			</div>
+			<div id="back" class="back">
+				<!-- back content -->
+			</div>
+		</div>
+	</div>
+
+	<div id="zoomer"></div>
+
+	<div id="loader-box">
+		<div id="loader"></div>
+	</div>
+
+	<!-- Important for hiding: -->
+	<!-- To make the container fade out AFTER the msg disappeared, -->
+	<!-- xbox-note-hide duration must be shrink-duration plus desired hide-duration, -->
+	<!-- then in the hide-keyframes retain the opacity for the shrink-duration -->
+
+	<div id="xbox-note" class="xbox-note-unhide">
+		<div class="xbox-note-icon"></div>
+		<div class="xbox-note-msg">Message</div>
+	</div>
+
+<!--
+	<div id="overlay" class="overlay"></div>
+-->
+
+	<script>
+		document.onclick = function() {
+			document.getElementById('xbox-note').classList.toggle('xbox-note-unhide');
+			document.getElementById('xbox-note').classList.toggle('xbox-note-hide');
+			document.getElementById('overlay').classList.toggle('overlay-fade-in');
+		};
+	</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+	<title>Sort</title>
+
+</head>
+
+<body>
+	<div id="kontrolle"></div>
+	<button onclick="toggleSort();">Toggle sort</button>
+
+	<script>
+		var sort_mode = "first";
+		var kontrolle = document.getElementById("kontrolle");
+
+		var objs = [ 
+			{ first_nom: 'Adam', last_nom: 'Jamf'     },
+			{ first_nom: 'Mandarine',    last_nom: 'Bodine'   },
+			{ first_nom: 'Ziggurat', last_nom: 'Prentice' }
+		];
+
+		function compare(a, b) {
+			if(sort_mode == "last") {
+				if (a.last_nom < b.last_nom) {
+					return -1;
+				}
+				if (a.last_nom > b.last_nom) {
+					return 1;
+				}
+			}
+			else if(sort_mode == "first") {
+				if (a.first_nom < b.first_nom) {
+					return -1;
+				}
+				if (a.first_nom > b.first_nom) {
+					return 1;
+				}
+			}
+			return 0;
+		}
+
+		function list(int_objs) {
+			kontrolle.innerHTML = "";
+			for(var i = 0; i < int_objs.length; i++) {
+				kontrolle.innerHTML += int_objs[i].last_nom + "</br>";
+			}
+		}
+
+		function toggleSort() {
+			sort_mode = (sort_mode == "first") ? "last" : "first";
+			objs.sort(compare);
+			list(objs);
+		}
+	</script>
+</body>
+</html>

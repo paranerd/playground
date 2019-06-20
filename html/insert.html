@@ -1,0 +1,47 @@
+<html>
+<body>
+	<div id="kontrolle"></div>
+
+	<script>
+		/*
+		 * Inserts a string $insert into a file before ($pos = -1) or after ($pos = 1)
+		 * a line containing a string $search.
+		 * If $only_one = true, only the first line with $search is regarded
+		 * If $only_one = false, every line with $search is regarded
+		 */
+
+		var lines = ['one', 'two', 'three', 'two'];
+		var pos = -1;
+		var search = 'two';
+		var insert = 'line_to_insert';
+		var line_cache = '';
+		var result = '';
+		var result_array = [];
+		var found = false;
+		var only_once = true;
+
+		for(var i = 0; i < lines.length; i++) {
+			console.log(lines[i] + " indexOf " + search + " = " + lines[i].indexOf(search));
+			if(lines[i].indexOf(search) !== -1 && !(found && only_once)) {
+				if(pos == -1) {
+					result_array.push(insert);
+					result_array.push(lines[i]);
+				}
+				else {
+					result_array.push(lines[i]);
+					result_array.push(insert);
+				}
+				found = true;
+			}
+			else {
+				result_array.push(lines[i]);
+			}
+		}
+
+		var kontrolle = document.getElementById("kontrolle");
+		for(var j = 0; j < result_array.length; j++) {
+			kontrolle.innerHTML = kontrolle.innerHTML + result_array[j] + "</br>";
+		}
+	</script>
+</body>
+</html>

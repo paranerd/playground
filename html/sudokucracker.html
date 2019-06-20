@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+	<title>Sudoku Kopie</title>
+</head>
+
+<body onload="init();">
+	<div id="field"></div>
+	<button onclick="crack();"> Crack! </button>
+	<input id="rescue" type="text" size=1 value=100></input>
+	<button onclick="increaseRescue();"> + </button>
+	<button onclick="readField();"> Read </button>
+	<button onclick="checkBox();"> Check Box </button>
+
+	<div id="kontrolle"></div>
+	<div id="time" style="position: absolute; bottom: 0px">Calculating</div>
+
+	<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript">
+		var printGrid = function(tGrid, stepsCount) {
+			$("#kontrolle").html("");
+			for(var i = 0; i < 9; i++) {
+				for(var j = 0; j < 9; j++) {
+					$("#kontrolle").append(tGrid[i][j]);
+					if(j < 6 && (j + 1) % 3 == 0) {
+						$("#kontrolle").append(" | ");
+					}
+				}
+				if(i < 6 && (i + 1) % 3 == 0) {
+					$("#kontrolle").append("</br>------------------");
+				}
+				$("#kontrolle").append("</br>");
+			}
+		}
+
+		function loadGrid() {
+			var field = [];
+
+			// Fill Array
+			var k = 0;
+			for(var i = 0; i < 9; i++) {
+				field[i] = [];
+				for(var j = 0; j < 9; j++) {
+					k++;
+					field[i][j] = ($("#"+k).val() == "") ? "." : $("#"+k).val(); 
+				}
+			}
+
+			return field;
+		}
+
+		function getCandidates(tGrid, row, col) {
+			var s = "";
+
+			for(var c = 1; c <= 9; c++) {
+				var collision = false;
+				for(var i = 0; i < 9; i++) {
+					//var test = (row - row % 3) + Math.floor(i / 3);
+					//var test2 = (col - col % 3) + i % 3;
+					//console.log(test + ", " + test2);
+					if(tGrid[row][i] == c ||
+					   tGrid[i][col] == c ||
+					   tGrid[(row - row % 3) + Math.floor(i / 3)][(col - col % 3) + i % 3] == c) {
+						collision = true;
+						break;
+					}
+				}
+				if(!collision) {
+					s += c;
+				}
+			}
+
+			var theReturn = s;
+			return theReturn;
+		}
+
+		function solve(tGrid, stepsCount) {
+			var solved = false;
+
+			var row = -1;
+			var col = -1;
+			var candidates;
+
+			for(var i = 0; i < 9; i++) {
+				for(var j = 0; j < 9; j++) {
+					if(tGrid[i][j] == '.') {
+						var newCandidates = getCandidates(tGrid, i, j);
+						if(row < 0 || newCandidates.length < candidates.length) {
+							row = i;
+							col = j;
+							candidates = newCandidates;
+						}
+					}
+				}
+			}
+			if(row < 0) {
+				solved = true;
+			}
+			else {
+				for(var i = 0; i < candidates.length; i++) {
+					tGrid[row][col] = candidates.charAt(i);
+					stepsCount++;
+					if(solve(tGrid, stepsCount)) {
+						solved = true;
+						break;
+					}
+					tGrid[row][col] = '.';
+				}
+			}
+			return solved;
+		}
+
+		function init() {
+			for(var i = 1; i <= 81; i++) {
+				$( "<input id="+i+" type='text' size='1'></input>" ).appendTo( $("#field") );
+				if(i % 9 == 0) {
+					$("#field").append("</br>");
+				}
+			}
+		}
+
+		function crack() {
+			var stepsCount = 0;
+			var tGrid = loadGrid();
+			printGrid(tGrid, 6);
+			if(solve(tGrid, stepsCount)) {
+				printGrid(tGrid, stepsCount);
+			}
+			else {
+				console.log("Could not solve this Sudoku.");
+			}
+		}
+	</script>
+</body>
+</html>

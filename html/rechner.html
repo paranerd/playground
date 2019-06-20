@@ -1,0 +1,75 @@
+<html>
+<head>
+<title>Rechner</title>
+</head>
+<script type="text/javascript">
+var array = new Array();
+var operation = 0;
+var ergebnis = 0;
+var zeichen;
+var wert;
+var operators =	{ 	'+': function(a,b) { return a + b },
+			'-': function(a,b) { return a - b },
+			'*': function(a,b) { return a * b },
+			'/': function(a,b) { return a / b }
+}
+
+function input(zahl) {
+    wert = parseInt(zahl);
+    array.push(wert);
+    zeichen = array.join("");
+    document.getElementById("display").value = zeichen;
+}
+
+function berechnung(newOperation) {
+if (array.length < 1) {
+    document.getElementById("display").value = "Kein Wert eingegeben";
+    operation = newOperation;
+}
+else {
+    if (operation == 0) {
+	ergebnis = zeichen;
+	array = new Array();
+	document.getElementById("display").value = "";
+	document.getElementById("side").value = ergebnis;
+	operation = newOperation;
+    }
+    else {
+	ergebnis = operators[operation](ergebnis*1,zeichen*1);
+	operation = newOperation;
+	document.getElementById("display").value = "";
+	document.getElementById("side").value = ergebnis;
+	array = new Array();
+    }
+}
+}
+function istGleich() {
+	ergebnis = operators[operation](ergebnis*1,zeichen*1);
+	document.getElementById("display").value = "";
+	document.getElementById("side").value = ergebnis;
+	ergebnis = 0;
+	array = new Array();
+}
+</script>
+
+<body>
+<input type="text" id="display" name="zahl"></br>
+<input type="text" id="side" name="seite"></br>
+<input type="button" value="+" onclick="berechnung('+');"/>
+<input type="button" value="1" onclick="input(1);"/>
+<input type="button" value="2" onclick="input(2);"/>
+<input type="button" value="3" onclick="input(3);"/></br>
+<input type="button" value="-" onclick="berechnung('-');"/>
+<input type="button" value="4" onclick="input(4);"/>
+<input type="button" value="5" onclick="input(5);"/>
+<input type="button" value="6" onclick="input(6);"/></br>
+<input type="button" value="/" onclick="berechnung('/');"/>
+<input type="button" value="7" onclick="input(7);"/>
+<input type="button" value="8" onclick="input(8);"/>
+<input type="button" value="9" onclick="input(9);"/></br>
+<input type="button" value="*" onclick="berechnung('*');"/>
+<input type="button" value="0" onclick="input(0);"/>
+
+<input type="button" value="   =   " onclick="istGleich();"/>
+</body>
+</html>

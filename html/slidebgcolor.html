@@ -1,0 +1,35 @@
+<html>
+
+<body>
+	<div id="back" style="position: absolute; left: 0; top: 0; height: 100px; width: 200px; background-color: green;">
+		<div id="front" style="height: 100%; width: 0%; background-color: red;"></div>
+	</div>
+	
+	<script>
+	var mouseDown = null;
+	document.onmousedown = function(e) {
+			mouseDown = e.clientX;
+	}
+
+	document.onmouseup = function(e) {
+			mouseDown = null;
+	}
+
+	document.onmousemove = function(e) {
+		if(mouseDown) {
+			var width = mouseDown - e.clientX;
+			if(width > 100) {
+				width = 100;
+				mouseDown = e.clientX + 100;
+			}
+			else if(width < 0) {
+				width = 0;
+				mouseDown = e.clientX;
+			}
+			var front = document.getElementById("front");
+			front.style.width = width + "%";
+		}
+	}
+	</script>
+</body>
+</html>

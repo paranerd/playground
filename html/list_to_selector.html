@@ -1,0 +1,170 @@
+<!doctype html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+</head>
+
+<body>
+	<div id="search-filter">
+		<ul class="dropdown-menu" data-plenty="navbar-main">
+			<li class="cat-4146">
+				<ul class="dropdown-menu" data-plenty="navbar-main">
+					<li class="cat-4154 hasSublevel">
+						<span class="openCloseToggle" data-plenty="openCloseToggle"></span>
+						<a href="http://www.spetan.de/herstellerauswahl/hp/">
+							HP<span class="caret"></span>
+							<span class="badge pull-right">1</span>
+						</a>
+
+						<ul data-plenty="navbar-main">
+							<li class="cat-4155 hasSublevel">
+								<span class="openCloseToggle" data-plenty="openCloseToggle"></span>
+								<a href="http://www.spetan.de/herstellerauswahl/hp/photosmart/">
+									Photosmart <span class="caret"></span>
+									<span class="badge pull-right">1</span>
+								</a>
+
+								<ul data-plenty="navbar-main">
+									<li class="cat-4156">
+										<a href="http://www.spetan.de/herstellerauswahl/hp/photosmart/5460/">
+											5460
+											<span class="badge pull-right">1</span>
+										</a>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+
+					<li class="cat-4157 hasSublevel">
+						<span class="openCloseToggle" data-plenty="openCloseToggle"></span>
+						<a href="http://www.spetan.de/herstellerauswahl/lexmark/">
+							Lexmark<span class="caret"></span>
+							<span class="badge pull-right">1</span>
+						</a>
+
+						<ul data-plenty="navbar-main">
+							<li class="cat-4158 hasSublevel">
+								<span class="openCloseToggle" data-plenty="openCloseToggle"></span>
+								<a href="http://www.spetan.de/herstellerauswahl/lexmark/genesis/">
+									Genesis<span class="caret"></span>
+									<span class="badge pull-right">1</span>
+								</a>
+
+								<ul data-plenty="navbar-main">
+									<li class="cat-4159">
+										<a href="http://www.spetan.de/herstellerauswahl/lexmark/genesis/810/">
+											810
+											<span class="badge pull-right">1</span>
+										</a>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</li>
+		</ul>
+	</div>
+
+	<select id="manufacturer"><option>Select Manufacturer</option></select>
+	<select id="series"><option>Select Series</option></select>
+	<select id="model"><option>Select Model</option></select>
+
+	<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+	<script>
+		$(document).ready(function(){
+			$("#manufacturer").on('change', function() {
+				$("#filter-button").attr('href', $("#search-filter ." + $(this).val() + " a").first().attr('href'));
+				resetSeries();
+				setSeries($(this).val());
+			});
+
+			$("#series").on('change', function() {
+				$("#filter-button").attr('href', $("#search-filter ." + $(this).val() + " a").first().attr('href'));
+				resetModel();
+				setModel($(this).val());
+			});
+
+			$("#model").on('change', function() {
+				$("#filter-button").attr('href', $("#search-filter ." + $(this).val() + " a").first().attr('href'));
+			});
+
+			resetManufacturer();
+			setManufacturer();
+		});
+
+		function resetManufacturer() {
+			$("#manufacturer").empty();
+			$("#manufacturer").append('<option/>');
+			$("#manufacturer option").text('Select Manufacturer');
+		}
+
+		function resetSeries() {
+			$("#series").empty();
+			$("#series").append('<option/>');
+			$("#series option").text('Select Series');
+			resetModel();
+		}
+
+		function resetModel() {
+			$("#model").empty();
+			$("#model").append('<option/>');
+			$("#model option").text('Select Model');
+		}
+
+		function setManufacturer() {
+			var total = $("#search-filter > ul > li.cat-4146 > ul > li").size();
+
+			for(i = 0; i < total; i++){
+				$("#manufacturer").append("<option/>");
+			}
+
+			$("#manufacturer option").each(function(index) {
+				if (index > 0) {
+					$(this).text($("#search-filter > ul > li.cat-4146 > ul > li:eq(" + (index - 1) + ") > a").clone().children().remove().end().text());
+					$(this).val($("#search-filter > ul > li.cat-4146 > ul > li:eq(" + (index - 1) + ")").attr('class').split(' ')[0]);
+				}
+			});
+		}
+
+		function setSeries(cat) {
+			if(cat == "") {
+				return;
+			}
+
+			var total = $("#search-filter ." + cat + " > ul > li").size();
+
+			for(i = 0; i < total; i++){
+				$("#series").append("<option/>");
+			}
+
+			$("#series option").each(function(index){
+				if(index > 0) {
+					$(this).text($("#search-filter ." + cat + " > ul > li:eq(" + (index - 1) + ") > a").clone().children().remove().end().text());
+					$(this).val($("#search-filter ." + cat + " > ul > li:eq(" + (index - 1) + ")").attr('class').split(' ')[0]);
+				}
+			});
+		}
+
+		function setModel(cat) {
+			if(cat == "") {
+				return;
+			}
+
+			var total = $("#search-filter ." + cat + " > ul > li").size();
+
+			for(i = 0; i < total; i++){
+				$("#model").append("<option/>");
+			}
+
+			$("#model option").each(function(index){
+				if (index > 0) {
+					$(this).text($("#search-filter ." + cat + " > ul > li:eq(" + (index - 1) + ") > a").clone().children().remove().end().text());
+					$(this).val($("#search-filter ." + cat + " > ul > li:eq(" + (index - 1) + ")").attr('class').split(' ')[0]);
+				}
+			});
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> Pixelwars </title>
+</head>
+
+<style>
+	#playerCanvas {
+		position: absolute;
+		width: 32px;
+		height: 32px;
+		border: solid 1px black;
+		z-index: 1;
+	}
+</style>
+
+<body style="background-color: black;" onload="initPlayer(); draw();">
+
+	<canvas id="playerCanvas"></canvas>
+
+
+	<div id="kontrolle" class="hideMe" style="position: absolute; margin-top: 0px"></div>
+
+	<script src="js/jquery-1.8.3.min.js"></script>
+
+	<script>
+		var canvas = document.getElementById("playerCanvas");
+		var ctx = canvas.getContext("2d");
+		ctx.globalAlpha = 0.1;
+
+		// Maximize the canvas
+		canvas.width = 32; //window.innerWidth;
+		canvas.height = 32; //window.innerHeight;
+
+		var healthyPixel = [];
+		var hurtPixel = [];
+		var pixelSize = 2;
+		var pixelCount = (32 / pixelSize) * (32 / pixelSize);
+
+		function initPlayer() {
+			var x = 0,
+				y = 0,
+				color;
+			for(var i = 1; i <= pixelCount; i += 1) {
+				healthyPixel[i] = {x: x, y: y, color: "red"};
+				if(i > 0 && i % (32/pixelSize) == 0) {
+					x = 0;
+					y += 1;
+				}
+				else {
+					x += 1;
+				}
+			}
+		}
+
+		function draw() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			for(var v = 1; v < healthyPixel.length; v += 1) {
+				ctx.fillStyle = healthyPixel[v].color;
+				ctx.fillRect(healthyPixel[v].x * pixelSize, healthyPixel[v].y * pixelSize, pixelSize, pixelSize);
+			}
+		}
+
+		document.onmousedown = function(e) {
+			for(var i=0; i < 16; i++) {
+				var damage = Math.floor(Math.random() * (healthyPixel.length - 1) + 1);
+				if(healthyPixel[damage].color == "red") {
+						healthyPixel[damage].color = "yellow";
+					draw();
+				}
+				else {
+					i--;
+				}
+		
+			}
+		}
+	</script>
+</body>
+</html>

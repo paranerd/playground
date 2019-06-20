@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>jQuery UI Draggable + Sortable</title>
+	<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+	<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+	<style>
+	ul {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		margin-bottom: 10px;
+	}
+	li, .draggable {
+		margin: 5px;
+		padding: 5px;
+		width: 150px;
+		background-color: red;
+		font-size: 16px;
+		text-align: center;
+	}
+	#dropzone {
+		position: absolute;
+		top: 0;
+		left: 200px;
+		height: 200px;
+		width: 200px;
+		border: 1px solid grey;
+	}
+	.xicon {
+		position:absolute;
+		top: 4px;
+		right: 4px;
+		color: #000;
+		font: message-box;
+		text-decoration: none;
+	}
+
+	.xicon:hover {
+		background-color: #fff;
+		color: #000;
+		width: 13px;
+		height: 20px;
+		text-align: center;
+	}
+	</style>
+</head>
+<body>
+	<div id="draggable" class="ui-state-highlight draggable">Drag me down<span></span></div>
+	<div id="draggable2" class="ui-state-highlight draggable">Drag me down2<span></span></div>
+
+	<ul id="sortable">
+		<li class="ui-state-default">Item 1</li>
+		<li class="ui-state-default">Item 2</li>
+		<li class="ui-state-default">Item 3</li>
+		<li class="ui-state-default">Item 4</li>
+		<li class="ui-state-default">Item 5</li>
+	</ul>
+
+	<div id="dropzone">
+
+	</div>
+
+	<script>
+		var x = null;
+		$( "#sortable" ).sortable({
+			revert: true
+		});
+
+		$("#draggable").draggable({
+			helper: 'clone',
+			cursor: 'move',
+			tolerance: 'fit',
+			cursorAt: { top: 0, left: 0 },
+			revert: 'invalid',
+			connectToSortable: "#sortable"
+		});
+
+		$("#draggable2").draggable({
+			snap: true,
+			helper: 'clone',
+			cursor: 'move',
+			tolerance: 'fit',
+			cursorAt: { top: 0, left: 0 },
+			revert: 'invalid'
+		});
+
+		$("ul, li").disableSelection();
+
+		$("#dropzone").droppable({
+			accept: '#draggable2',
+			drop: function(e, ui) {
+				if ($(ui.draggable)[0].id != "") {
+					x = ui.helper.clone();
+					ui.helper.remove();
+					x.draggable({
+						snap: true,
+						helper: 'original',
+						cursor: 'move',
+						containment: '#dropzone',
+						tolerance: 'fit',
+						drop: function (event, ui) {
+							$(ui.draggable).remove();
+						}
+					});
+
+					x.css({
+						'top' : e.pageY - $(this).offset().top,
+						'left' : e.pageX - $(this).offset().left,
+					});
+
+					x.resizable({
+						maxHeight: $('#dropzone').height(),
+						maxWidth: $('#dropzone').width()
+					});
+
+					x.addClass('remove');
+					var el = $("<span><a href='Javascript:void(0)' class='xicon delete' title='Remove'>X</a></span>");
+					$(el).insertAfter($(x.find('span')));
+					x.appendTo('#dropzone');
+					$('.delete').on('click', function () {
+						$(this).parent().parent('div').remove();
+					});
+					$('.delete').parent().parent('div').dblclick(function () {
+						$(this).remove();
+					});
+				}
+			}
+		});
+	</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<html>
+<head>
+<title>Navi Autocomplete</title>
+</head>
+
+<body>
+<div id="kontrolle"></div>
+<input id="message" type="text"/>
+<div id="possibilities" style="width: 200px; height: 100px; overflow: auto;"></div>
+
+<script src="js/jquery-1.8.3.min.js"></script>
+<script>
+	var cities = ["Hamburg", "Berlin", "Kiel", "Koeln", "Dresden"];
+
+	document.ready = function() {
+		// Sort city array alphabetically
+		cities.sort();
+		updatePossibilities(cities);
+	}
+
+	document.onkeyup = function(e) {
+		checkCities($("#message").val());
+		if($("#message").val() == "") {
+			updatePossibilities(cities);
+		}
+	}
+
+	function checkCities(cityName) {
+		var possibleCities = [];
+		for(var i=0; i<cities.length; i++) {
+			for(var j=0; j<cityName.length; j++) {
+				if(cities[i].charAt(j).toLowerCase() == cityName.charAt(j).toLowerCase()) {
+					//alert("Called First If");
+					if(j == cityName.length - 1) {
+						possibleCities.push(cities[i]);
+						updatePossibilities(possibleCities);
+					}
+				}
+				else {
+					break;
+				}
+			}
+		}
+		if(possibleCities.length == 0) {
+			updatePossibilities("");
+		}
+	}
+
+	function updatePossibilities(cityList) {
+		// Add cities to possibilities
+		$log = $('#possibilities');
+		$log.empty();
+		for(var i=0; i<cityList.length; i++) {
+			$log.append(cityList[i]+", "+"</br>");
+		}
+	}
+</script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!-- Notes
+	Without jQuery all styles must be defined directly in the html-element
+	If you don't want that, simply add the respective jQuery-calls (.height(), etc.)
+	
+	Usage:
+	Have a div that you want to be custom scrollable with id e.g. "wrapper"
+	Make sure it has "overflow: hidden;"
+	simpleScroll.init("wrapper");
+	Append to it by supplying an HTML-Element or string of such to
+	simpleScroll.append([HTML-ELEMENT]);
+	If you want to clear the div, use:
+	simpleScroll.empty(); (to prevent deletion of inner container and scrollbar with wrapper.empty())
+	You can update the scrollbar e.g. on resize by calling
+	simpleScroll.update();
+-->
+
+<html>
+<head>
+	<title> Scrollbar </title>
+</head>
+
+<body>
+	<div id="outer" style="position: absolute; top: 20px; left: 0; height: 100px; width: 200px; background-color: blue; color: white; overflow: hidden;">
+		1<br>2<br>3<br>4
+	</div>
+	
+	<div style="position: absolute; top: 100px; left: 200px; height: 100px; width: 100px; background-color: red;"></div>
+	<script>
+		var simpleScroll = {
+			startscroll: false,
+			scrollpercent: 0,
+			diff: 0,
+			autoScrollBottom: false,
+			self: null,
+			containers: [],
+			scrollbarWidth: 0,
+			scrolling: null,
+			
+			offset: function(elem) {
+				var offset = {top: 0, left: 0};
+				var node = elem;
+				
+				while (node != null) {
+					offset.top += (!isNaN(node.offsetTop)) ? node.offsetTop : 0;
+					node = node.parentNode;
+				}
+				
+				return offset;
+			},
+			
+			init: function(id) {
+				if(!this.hasBeenInitialized) {
+					self = this;
+					self.scrollbarWidth = self.getScrollBarWidth();
+					
+					document.onmouseup = function() {
+						var container = self.getSSC(self.scrolling);
+						self.scrolling = null;
+						//simpleScrollContainer.style["MozUserSelect"] = "all";
+					}
+				}
+
+				var container = document.getElementById(id);
+				
+				if(container == null) {
+					return;
+				}
+				
+				var content = container.innerHTML;
+
+				container.innerHTML = "";
+				
+				var innerNode = document.createElement("div");
+				innerNode.id = "simpleScrollContainer" + self.containers.length;
+				innerNode.style.width = (parseInt(container.style.width) + self.scrollbarWidth) + "px";
+				innerNode.style.height = container.style.height;
+				innerNode.style.color = container.style.color;
+				innerNode.style.overflow = "auto";
+				innerNode.innerHTML = content;
+				
+				container.appendChild(innerNode);
+
+				var scrolly = document.createElement("div");
+				scrolly.id = "scrollbar" + self.containers.length;
+				scrolly.style.position = "absolute";
+				scrolly.style.top = "0px";
+				scrolly.style.right = "5px";
+				scrolly.style.height = "0%";
+				scrolly.style.width = "5px";
+				scrolly.style.backgroundColor = "#aaa";
+				scrolly.style.borderRadius = "3px";
+				
+				container.appendChild(scrolly);
+
+				// Register event callbacks
+				scrolly.onmousedown = function(e) {
+					var id = this.id.substring(9);
+					var container = self.getSSC(id);
+					if (container != null) {
+						container.diff = self.offset(this).top - e.pageY;
+						//simpleScrollContainer.style["MozUserSelect"] = "none";
+						self.scrolling = id;
+					}
+				}
+				
+				document.onmousemove = function(e) {
+					var id = self.scrolling;
+					var container = self.getSSC(self.scrolling);
+					if(container != null) {
+						var scrollbar = document.getElementById("scrollbar" + id);
+						container.scrollpercent = (e.pageY - self.offset(container.elem).top + container.diff) / (parseInt(container.elem.style.height) - parseInt(scrollbar.style.height));
+						container.elem.scrollTop = (container.elem.scrollHeight - parseInt(container.elem.style.height)) * container.scrollpercent;
+						scrollbar.style.top = (parseInt(container.elem.style.height) - parseInt(scrollbar.style.height)) * (parseInt(container.elem.scrollTop) / (parseInt(container.elem.scrollHeight) - parseInt(container.elem.style.height))) + "px";
+					}
+				}
+				
+				innerNode.onscroll = function() {
+					self.update();
+				}
+
+				self.containers.push({id: id, elem: innerNode, startscroll: 0, diff: 0, scrollpercent: 0});
+
+				self.update();
+			},
+			
+			append: function(id, html) {
+				var container = self.getContainer(id);
+				
+				if (container == null) {
+					return;
+				}
+				
+				if ((typeof html !== "object") || (html.nodeType !== 1) || (typeof html.tagName !== "string")) {
+					var wrapper = document.createElement('div');
+					wrapper.innerHTML = html;
+					while (wrapper.hasChildNodes()) {
+						container.elem.appendChild(wrapper.removeChild(wrapper.firstChild));
+					}
+				}
+				else {
+					container.elem.appendChild(html);
+				}
+				self.update();
+			},
+
+			update: function() {
+				console.log("update");	
+				if (self.containers.length == 0) {
+					return;
+				}
+				
+				for (var i = 0; i < self.containers.length; i++) {
+					var container = self.containers[i];
+					var wrapper = document.getElementById(container.id);
+					var scrollbar = document.getElementById("scrollbar" + i);
+				
+					// Adjust container height (in case wrapper height changed due to resize)
+					container.elem.style.height = parseInt(wrapper.style.height) + "px";
+
+					// Put scrollbar where it belongs	
+					scrollbar.style.height = (parseInt(wrapper.style.height) / parseInt(container.elem.scrollHeight)) * parseInt(wrapper.style.height) + "px";
+					if(self.autoScrollBottom) {
+						container.elem.scrollTop = parseInt(container.elem.scrollHeight) - parseInt(wrapper.style.height);
+					}
+
+					scrollbar.style.top = (parseInt(wrapper.style.height) - parseInt(scrollbar.style.height)) * (parseInt(container.elem.scrollTop) / (parseInt(container.elem.scrollHeight) - parseInt(wrapper.style.height))) + "px";
+
+					if(parseInt(scrollbar.style.height) == parseInt(container.elem.scrollHeight)) {
+						container.elem.style.width = wrapper.style.width;
+						scrollbar.style.display = "none";
+					}
+					else {
+						scrollbar.style.display = "block";
+						container.elem.style.width = (parseInt(wrapper.style.width) + self.scrollbarWidth) + "px";
+					}
+				}
+			},
+			
+			empty: function(id) {
+				var container = self.getContainer(id);
+				
+				if(container == null) {
+					return;
+				}
+
+				container.elem.innerHTML = "";
+			},
+			
+			getContainer: function(id) {
+				for (var i = 0; i < self.containers.length; i++) {
+					if(self.containers[i].id == id) {
+						return self.containers[i];
+					}
+				}
+				
+				return null;
+			},
+			
+			getSSC: function(id) {
+				for (var i = 0; i < self.containers.length; i++) {
+					if(self.containers[i].elem.id == "simpleScrollContainer" + id) {
+						return self.containers[i];
+					}
+				}
+				
+				return null;
+			},
+			
+			getScrollBarWidth: function() {
+			  var inner = document.createElement('p');
+			  inner.style.width = "100%";
+			  inner.style.height = "200px";
+
+			  var outer = document.createElement('div');
+			  outer.style.position = "absolute";
+			  outer.style.top = "0px";
+			  outer.style.left = "0px";
+			  outer.style.visibility = "hidden";
+			  outer.style.width = "50px";
+			  outer.style.height = "100px";
+			  outer.style.overflow = "hidden";
+			  outer.appendChild (inner);
+
+			  document.body.appendChild (outer);
+			  var w1 = inner.offsetWidth;
+			  outer.style.overflow = 'scroll';
+			  var w2 = inner.offsetWidth;
+			  if (w1 == w2) w2 = outer.clientWidth;
+
+			  document.body.removeChild(outer);
+
+			  return (w1 - w2);
+			}
+		};
+		
+		simpleScroll.init("outer");
+		
+		setTimeout(function() {
+			simpleScroll.append("outer", "<br>5<br>6<br>7<br>8<br>9");
+		}, 1000);
+	</script>
+</body>
+</html>

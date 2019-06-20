@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+	<title>Diagramm</title>
+</head>
+<style>
+	body {
+		background-color: #FFE4C4;
+		font-family: sans-serif;
+		margin: 0px;
+		padding: 0px;
+	}
+
+	#newBlock {
+		position: absolute;
+		left: 100px;
+		width: 50px;
+		background-color: orange;
+	}
+</style>
+
+<body>
+	<div id="bar" style="position: absolute; bottom: 200px; left: 100px; width: 50px; height: 100px; background-color: blue;"></div>
+
+	<script type="text/javascript">
+		var toAdd = [5, 10, 3, 15, 7, 20];
+		var counter = 0;
+		var bar = document.getElementById("bar");
+
+		var add = setInterval(function() {
+			if(counter > 0) {
+				bar.style.height = parseInt(bar.style.height) + toAdd[counter-1] + "px";
+			}
+
+			if(counter == toAdd.length) {
+				clearInterval(add);
+			}
+
+			var newHeight = (toAdd[counter]) ? toAdd[counter] : 0;
+			counter++;
+			var newTop = window.innerHeight - parseInt(bar.style.bottom) - parseInt(bar.style.height) - newHeight + "px";
+			
+			if(document.getElementById('newBlock')) {
+				document.body.removeChild(document.getElementById('newBlock'));
+			}
+
+			var block = document.createElement('div');
+			block.id = 'newBlock';
+			block.style.top = newTop;
+			block.style.height = newHeight + "px";
+			document.body.appendChild(block);
+		}, 500);
+	</script>
+</body>
+</html>

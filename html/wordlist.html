@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+	<title>Wordlist</title>
+</head>
+
+<body onload="create();">
+	<div id="kontrolle"></div>
+
+	<script>
+		var stellen = 2;
+		var counter = 0;
+		var pos = 0;
+		var i = 0;
+		var posspass = "";
+
+		var dyn = false;
+		var useNumbers = true;
+		var useSmall = false;
+		var useCapital = false;
+		var useCustom = false;
+		var doubles = true; // Allows i.e. 11, 0000 or "hello"
+		var maxStellen;
+
+		var small = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
+		var capital = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+		var numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+		var custom = ["Ke", "Ti", "Pa", "La", "Mi", "Jo"];
+
+		var zielwort = [];
+		var zielzahlen = [];
+		var symbols = [];
+
+		var writing = function() {
+			posspass = "";
+			if(!doubles) {
+				for(var i = 0; i < zielzahlen.length; i++) {
+					for(var j = 0; j < zielzahlen.length; j++) {
+						if(i != j && zielzahlen[j] == zielzahlen[i]) {
+							return;
+						}
+					}
+				}
+			}
+			// i.e.: zielzahlen = {0,0,1,2} --> posspass will be aabc
+			for(var i = 0; i < zielzahlen.length; i += 1) {
+				posspass = posspass + symbols[zielzahlen[i]];
+			}
+			// Write password to file
+			kontrolle.innerHTML = kontrolle.innerHTML + counter + ": " + posspass + "<br>";
+
+			counter++;
+		}
+
+		var loop = function() {
+			while(pos >= 0) {
+				// i.e.: if only small letters are used; current posspass = aaz, next will be aba
+				if(zielzahlen[pos] == symbols.length - 1) {
+					zielzahlen[pos] = 0;
+					pos = pos - 1;
+				}
+				// i.e.: only small letters used; current posspass = aab, next will be aac
+				else {
+					zielzahlen[pos]++;
+					pos = zielwort.length - 1;
+					writing();
+				}
+			}
+			if(dyn) {
+				if(stellen < maxStellen) {
+					stellen++;
+					create();
+				}
+			}
+			kontrolle.innerHTML = kontrolle.innerHTML + counter;
+			return;
+		}
+
+		var setAlphabet = function() {
+			if(useNumbers) {
+				for(var i = 0; i < numbers.length; i++) {
+					symbols.push(numbers[i]);
+				}
+			}
+			if(useSmall) {
+				for(var i = 0; i < small.length; i++) {
+					symbols.push(small[i]);
+				}
+			}
+			if(useCapital) {
+				for(var i = 0; i < capital.length; i++) {
+					symbols.push(capital[i]);
+				}
+			}
+			if(useCustom) {
+				for(var i = 0; i < custom.length; i++) {
+					symbols.push(custom[i]);
+				}
+			}
+		}
+
+		var create = function() {
+			setAlphabet();
+			zielwort = [];
+			zielzahlen = [];
+			// Pre-fill vector
+			for(var i = 0; i < stellen; i += 1) {
+				zielwort.push("a");
+				zielzahlen.push(0);
+			}
+			pos = zielwort.length - 1;
+
+			writing();
+			loop();
+			return;
+		}
+
+	</script>
+</body>
+</html>

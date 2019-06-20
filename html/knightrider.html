@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+	<title>Knight Rider</title>
+	<style>
+		.tile {
+			position: absolute;
+			left: 0;
+			top: 0;
+			height: 15px;
+			width: 5px;
+			background-color: red;
+		}
+	</style>
+</head>
+
+<body>
+	<script>
+		var tiles_moving = 0;
+		var maxtiles = 5;
+		var tiles = []; // 0 == stop; 1 == go
+		var finished = 0;
+		var interval;
+		var dir = 1; // 1 == right; -1 == left;
+
+		var init = function() {
+			var elem = document.createElement('div');
+			elem.id = tiles_moving;
+			elem.className = "tile";
+			elem.style.top = 0;
+			elem.style.left = 0;
+			
+			document.body.appendChild(elem);
+			tiles[tiles_moving] = 1;
+			tiles_moving++;
+		};
+		
+		var call = false;
+		var loop = setInterval(function() {
+			if(tiles_moving < maxtiles) {
+				init();
+			}
+			else if(call) {
+				start(ri);
+				ri++;
+			}
+			move();
+		}, 50);
+		
+		var ri = 0;
+		var start = function(ri) {
+			tiles[ri] = 1;
+			if(ri == maxtiles) {
+				call = false;
+			}
+		}
+
+		var move = function() {
+			for(var i = 0; i < maxtiles; i++) {
+				var block = document.getElementById(i);
+				if(block == null) {
+					continue;
+				}
+				//var left = parseInt(block.css('left'));
+				//var top = parseInt(block.css('top'));
+				var left = parseInt(block.style.left);
+				var top = parseInt(block.style.top);
+				if (((left > 0 && dir == -1) || (left < 100 && dir == 1)) && tiles[i] == 1) {
+				    //block.css('left', '+=' + (10 * dir) + 'px');
+				    block.style.left = parseInt(block.style.left) + (10 * dir) + "px";
+				}
+				else if((left == 0 || left == 100) && tiles[i] == 1) {
+					tiles[i] = 0;
+					finished++;
+				}
+				if(finished == maxtiles) {
+					dir *= -1;
+					finished = 0;
+					ri = 0;
+					call = true;
+				}
+			}
+		}
+	</script>
+</body>
+</html>

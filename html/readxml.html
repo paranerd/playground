@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title>Read XML</title>
+   <meta charset="UTF-8">
+</head>
+<body>
+	<div id="mediaContainer"></div>
+
+	<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+	<script>
+		window.onload = function() {
+			$.get("media.xml", function(XMLmediaArray) {
+				$(XMLmediaArray).find("bluray").each(function() {
+					var id = $(this).attr("id");
+					var title = $(this).attr("title");
+					var description = $(this).find("description").text();
+					var genre = $(this).find("genre").text();
+
+					$("#mediaContainer").append("<h3>"+title+"</h3><p>"+id+" # "+description+" # "+genre+"</p>");
+				});
+			});
+		}
+	</script>
+</body>
+</html>

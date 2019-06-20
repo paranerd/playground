@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<head>
+	<title>Move</title>
+	<style>
+	body {
+		padding: 0;
+		margin: 0;
+		overflow: hidden;
+	}
+	
+	#canvas {
+		cursor: none;
+	}
+	</style>
+</head>
+
+<body>
+	<div id="score" style="position: absolute; top: 20px; left: 20px;"></div>
+	<canvas id="canvas">
+		GeT ChRoMe?
+	</canvas>
+	<!--<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>-->
+
+	<script type="text/javascript">
+	var canvas = document.getElementById("canvas");
+	var ctx = canvas.getContext("2d");
+	canvas.width = 500;
+	canvas.height = 500;
+	
+	var moveHistory = [];
+	var snakeBody = [];
+	var moveDist = 0;
+	var size = 20;
+	var score = 0;
+	
+	window.onload = function() {
+		initSnake();
+		newBlock();
+	}
+	
+	function Snake(x, y) {
+		this.x = x,
+		this.y = y,
+		this.movingX = 0,
+		this.movingY = 0,
+		this.historyPos = 0,
+		this.speed = 3
+	}
+	
+	var snake;
+	var block;
+	
+	function Body(x, y, h) {
+		this.x = x,
+		this.y = y,
+		this.historyPos = h
+	}
+	
+	function Block(x, y) {
+		this.x = x,
+		this.y = y
+	}
+	
+	function collide(ent1, ent2) {
+		if(	ent1.x + size >= ent2.x && ent1.x <= ent2.x + size &&
+			ent1.y + size >= ent2.y && ent1.y <= ent2.y + size)
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	function getRandomBlock() {
+		// Returns a position for a new block that is not on the snake
+		while(true) {
+			var error = false;
+			var randomX = Math.floor(Math.random() * (canvas.width - size)) + 1;
+			var randomY = Math.floor(Math.random() * (canvas.height - size)) + 1;
+	
+			for(var i = 0; i < snakeBody.length; i++) {
+				elem = snakeBody[i];
+				if(collide(elem, {x: randomX, y: randomY})) {
+					error = true;
+					break;
+				}
+			}
+			if(!error) {
+				return {x: randomX, y: randomY};
+			}
+		}
+	}
+	
+	function initSnake() {
+		snake = new Snake(100, 100);	
+		snakeBody.push(snake);
+	}
+	
+	function newBlock() {
+		var pos = getRandomBlock();
+		block = new Block(pos.x, pos.y);
+	}
+	
+	function addBody() {
+		var pos = snakeBody[snakeBody.length - 1].historyPos + Math.ceil(24 / snake.speed);
+		var body = new Body(moveHistory[pos].x, moveHistory[pos].y, pos);
+		snakeBody.push(body);
+	}
+	
+	document.onkeydown = function(e) {
+		switch(e.keyCode) {
+			case 37: // LEFT
+				snake.movingX = -1;
+				snake.movingY = 0;
+				break;
+			case 39: // RIGHT
+				snake.movingX = 1;
+				snake.movingY = 0;
+				break;
+			case 38: // UP
+				snake.movingX = 0;
+				snake.movingY = -1;
+				break;
+			case 40: // DOWN
+				snake.movingX = 0;
+				snake.movingY = 1;
+				break;
+		}
+	}
+	
+	var update = setInterval(function() {
+		if(snake.movingX == 0 && snake.movingY == 0) {
+			return;
+		}
+	
+		for(var i = 2; i < snakeBody.length; i++) {
+			if(collide(snake, snakeBody[i])) {
+				clearTimeout(update);
+				clearTimeout(draw);
+				document.getElementById("score").innerHTML = "Game Over";
+			}
+		}
+	
+		if(collide(snake, block)) {
+			score++;
+			newBlock();
+			addBody();
+		}
+	
+		snake.x += snake.movingX * snake.speed;
+		snake.y += snake.movingY * snake.speed;
+	
+		if(snake.x >= canvas.width) {
+			snake.x = 0;
+		}
+		if(snake.x < 0) {
+			snake.x = canvas.width - size;
+		}
+		if(snake.y < 0) {
+			snake.y = canvas.height - size;
+		}
+		if(snake.y >= canvas.height) {
+			snake.y = 0;
+		}
+	
+		moveHistory.unshift({x: snake.x, y: snake.y});
+	
+		for(var i = 1; i < snakeBody.length; i++) {
+			var pos = snakeBody[i].historyPos;
+			snakeBody[i].x = moveHistory[pos].x;
+			snakeBody[i].y = moveHistory[pos].y;
+		}
+		moveDist++;
+	}, 16);
+	
+	var draw = setInterval(function() {
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		ctx.fillStyle = "lightgrey";
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
+	
+		// Snake
+		for(var i = 0; i < snakeBody.length; i++) {
+			ctx.fillStyle = (i == 0) ? "green" : "limegreen";
+			ctx.fillRect(snakeBody[i].x, snakeBody[i].y, size, size);
+		}
+	
+		// Block
+		ctx.fillStyle = "red";
+		ctx.fillRect(block.x, block.y, size, size);
+	
+		// Score
+		document.getElementById("score").innerHTML = score;
+	}, 30);
+	</script>
+</body>
+</html>

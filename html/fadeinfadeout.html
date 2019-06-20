@@ -1,0 +1,56 @@
+<html>
+<head>
+	<title>Fade In Fade Out</title>
+</head>
+
+<body>
+	<div id="box" style="position: absolute; top: 100px; left: 100px; width: 100px; height: 100px; background-color: red;"></div>
+	
+	<script>
+		fadeOut('box', 1000);
+
+		function fadeOut(id, time) {
+			var node = document.getElementById(id);
+			var diff = (time > 0) ? (100 / time) : 1;
+			var op = (node.style.opacity) ? parseInt(node.style.opacity) : 1;
+			
+			if(time == 0) {
+				node.style.opacity = 0;
+				fadeIn(id, 500);
+				return;
+			}
+
+			var test = setInterval(function() {
+				op -= diff
+				node.style.opacity = op;
+
+				if(node.style.opacity <= 0) {
+					clearTimeout(test);
+					node.style.opacity = 0;
+					fadeIn(id, 1000);
+				}
+			}, 100);
+		}
+
+		function fadeIn(id, time) {
+			var node = document.getElementById(id);
+			var diff = (time > 0) ? (100 / time) : 1;
+			var op = (node.style.opacity) ? parseInt(node.style.opacity) : 0;
+			
+			if(time == 0) {
+				node.style.opacity = 1;
+				return;
+			}
+
+			var test2 = setInterval(function() {
+				op += diff;
+				node.style.opacity = op;
+
+				if(node.style.opacity >= 1) {
+					clearTimeout(test2);
+				}
+			}, 100);
+		}
+	</script>
+</body>
+</html>

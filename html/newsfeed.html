@@ -1,0 +1,50 @@
+<html>
+<head>
+<title>Newsfeed</title>
+</head>
+
+<body onload="initializeFeed();">
+<div id="kontrolle"></div>
+<div id="outerDiv" style="background-color: lightblue; height: 50px; width: 200px; overflow: hidden; white-space: nowrap;">
+</div>
+
+<script src="js/jquery-1.8.3.min.js"></script>
+<script>
+	var feedArray = [];
+	var feedContainer;
+	var feedSeparator;
+	var feedWidth;
+
+	function initializeFeed() {
+		// Create first feed container
+		createFeedBlock();
+
+		// If necessary, create more
+		for(var i=feedWidth; i < $("#outerDiv").width()+feedWidth; i+=feedWidth) {
+			createFeedBlock();
+		}
+		startFeed();
+	};
+
+	function createFeedBlock() {
+		feedContainer = document.createElement("span");
+		feedContainer.style.marginLeft="0px";
+		feedContainer.innerHTML="Testing +++ ";
+		feedArray.push(feedContainer);
+		document.getElementById("outerDiv").appendChild(feedContainer);
+		feedWidth = feedArray[0].offsetWidth;
+	}
+
+	function startFeed() {
+		var links;
+		setInterval(function() {
+			feedArray[0].style.marginLeft = (parseInt(feedArray[0].style.marginLeft) - 1) + "px";
+			if(-1*parseInt((feedArray[0].style.marginLeft)) == feedWidth) {
+				feedArray.splice(0,1);
+				createFeedBlock();
+			}
+		}, 20);
+	};
+</script>
+</body>
+</html>

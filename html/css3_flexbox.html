@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <title>css3_flexbox</title>
+	<style>
+		@import "compass/css3";
+		@import url('//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css');
+
+		body {
+		  font-family: sans-serif;
+		}
+
+		.navigation {
+		  padding: 0;
+		  margin: 0;
+		  list-style: none;
+		  display: flex;
+		  background-color: deepskyblue;
+		  
+		  -webkit-flex-flow: row wrap;
+		  justify-content: flex-end;
+		}
+
+		.navigation a {
+		  text-decoration: none;
+		  color: white;
+		  
+		  padding: 1em;
+		  display: block;
+		}
+
+		#navigation-toggle {
+		  display: none;
+		  position: absolute;
+		  right: 0;
+		  cursor: pointer;
+		}
+
+		@media all and (max-width: 800px) {
+		  .navigation {
+			justify-content: space-around;
+		  }
+		}
+
+		@media all and (min-width: 600px) {
+		  .navigation {
+			display: flex !important;
+		  }
+		}
+
+		@media all and (max-width: 600px) {
+		  .navigation {
+			display: none;
+			-webkit-flex-flow: column wrap;
+			flex-flow: column wrap;
+			padding: 0;
+		  }
+		  
+		  .navigation a {
+			text-align: center; 
+			padding: 10px;
+			border-top: 1px solid rgba(255,255,255,0.3); 
+			border-bottom: 1px solid rgba(0,0,0,0.1); 
+		  }
+
+		  .navigation li:last-of-type a {
+			border-bottom: none;
+		  }
+		  
+		  #navigation-toggle {
+			display: block;
+		  }
+		}
+
+		.flex-container {
+		  padding: 0;
+		  margin: 0;
+		  list-style: none;
+		  
+		  display: -webkit-box;
+		  display: -moz-box;
+		  display: -ms-flexbox;
+		  display: -webkit-flex;
+		  display: flex;
+		  
+		  -webkit-flex-flow: row wrap;
+		  justify-content: space-between;
+		  flex-wrap: wrap;
+		}
+
+		.flex-container li {
+		  background: tomato;
+		  padding: 5px;
+		  width: 300px;
+		  height: 150px;
+		  margin-top: 10px;
+		  
+		  line-height: 150px;
+		  color: white;
+		  font-weight: bold;
+		  font-size: 3em;
+		  text-align: center;
+		}
+
+		.hidden {
+		  display: none;
+		}
+	</style>
+</head>
+
+<body>
+	<span id="navigation-toggle"><span class="glyphicon glyphicon-align-justify"></span> Menu</span>
+	<ul class="navigation">
+	  <li><a href="#">Home</a></li>
+	  <li><a href="#">News</a></li>
+	  <li><a href="#">Logout</a></li>
+	</ul>
+	<ul class="flex-container">
+	  <li>1</li>
+	  <li>2</li>
+	  <li>3</li>
+	  <li>4</li>
+	  <li>5</li>
+	  <li>6</li>
+	  <li>7</li>
+	  <li>8</li>
+	</ul>
+	
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+	<script>
+		$("#navigation-toggle").click(function() {
+		  $(".navigation").slideToggle('fast', function() {
+			if ($(this).is(':visible')) {
+			  $(this).css('display', 'flex');
+			}
+		  });
+		})
+	</script>  
+</body>
+</html>

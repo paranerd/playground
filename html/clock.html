@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+	<title>Clock</title>
+	<style>
+		#clockcontainer {
+			position: absolute;
+			width: 400px;
+			height: 100px;
+			background-color: grey;
+			overflow: hidden;
+			font-family: sans-serif;
+		}
+
+		.tile {
+			position: absolute;
+			width: 50px;
+			height: 100px;
+			background-color: lightgrey;
+			display: inline;
+			float: left;
+			line-height: 100px;
+			text-align: center;
+			font-size: 32px;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="backupcontainer">
+		<div id="hour1_b" class="tile"></div>
+		<div id="hour2_b" class="tile"></div>
+		<div id="minute1_b" class="tile"></div>
+		<div id="minute2_b" class="tile"></div>
+		<div id="second1_b" class="tile"></div>
+		<div id="second2_b" class="tile"></div>
+	</div>
+	<div id="clockcontainer">
+		<div id="time0" class="tile" style="left: 0px;"></div>
+		<div id="time1" class="tile" style="left: 50px;"></div>
+		<div class="tile" style="left: 100px;">:</div>
+		<div id="time2" class="tile" style="left: 150px;"></div>
+		<div id="time3" class="tile" style="left: 200px;"></div>
+		<div class="tile" style="left: 250px;">:</div>
+		<div id="time4" class="tile" style="left: 300px;"></div>
+		<div id="time5" class="tile" style="left: 350px;"></div>
+	</div>
+	
+	<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			var time = getTime(0);
+
+			$("#time0").html(time[0]);
+			$("#time1").html(time[1]);
+			$("#time2").html(time[2]);
+			$("#time3").html(time[3]);
+			$("#time4").html(time[4]);
+			$("#time5").html(time[5]);
+		});
+
+		function getTime(add) {
+			var date = new Date(Date.now() - add);
+
+			var hours = date.getHours();
+			var minutes = date.getMinutes();
+			var seconds = date.getSeconds();
+
+			var hour1 = (hours > 9) ? String(hours).charAt(0) : 0;
+			var hour2 = (hours > 9) ? String(hours).charAt(1) : String(hours).charAt(0);
+
+			var minute1 = (minutes > 9) ? String(minutes).charAt(0) : 0;
+			var minute2 = (minutes > 9) ? String(minutes).charAt(1) : String(minutes).charAt(0);
+
+			var second1 = (seconds > 9) ? String(seconds).charAt(0) : 0;
+			var second2 = (seconds > 9) ? String(seconds).charAt(1) : String(seconds).charAt(0);
+
+			return [hour1, hour2, minute1, minute2, second1, second2];
+		}
+
+		var displayTime = setInterval(function() {
+			var time = getTime(0); // Actual time
+			var just = getTime(1000); // Time one second ago
+
+			for(var i = 0; i < time.length; i++) {
+				if(time[i] != just[i]) {
+					transit(i, time[i]);
+				}
+			}
+		}, 1000);
+
+		function transit(pos, value) {
+			$("#time"+pos).animate({"top" : "+=100px"}, 500, function() {$("#time"+pos).remove(); $("#backup"+pos).attr('id', 'time'+pos);});
+			var left = pos*50 + Math.floor((pos/2))*50;
+			$("#clockcontainer").append("<div id='backup"+pos+"' class='tile' style='left: "+ left +"px; top: -100px;'>"+value+"</div>");
+			$("#backup"+pos).animate({"top" : "+=100px"}, 500);
+		}
+	</script>
+</body>
+</html>

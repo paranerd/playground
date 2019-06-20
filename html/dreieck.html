@@ -1,0 +1,71 @@
+<html>
+<body>
+<!-- Ein Programm, das aus drei einzugebenden Seitenlängen ein Dreieck konstruiert !-->
+
+    <b>Seite a: </b><input id="sidea" type="text" size="20" name="seite_a"/>
+    <b>Seite b: </b><input id="sideb" type="text" size="20" name="seite_b"/>
+    <b>Seite c: </b><input id="sidec" type="text" size="20" name="seite_c"/>
+	<button id="send" onclick="calculate();">Berechnen</button>
+
+	<div id="kontrolle"></div>
+	<canvas id="canvasLinie" width="500" height="200">
+		Dein Browser unterstützt das Canvas-Element nicht.
+	</canvas>
+
+<script type="text/javascript">
+	function calculate() {
+		var a = sidea.value;
+		var b = sideb.value;
+		var c = sidec.value;
+
+		// Prüfen, ob für jede Seite ein Wert größer Null eingegeben wurde
+		if (a != "" && b != "" && c != "") {
+			// Kosinus berechnen
+				var cos_a = (Math.pow(a, 2) - Math.pow(b, 2) - Math.pow(c, 2)) / (-(2 * b * c));
+				var cos_b = (Math.pow(b, 2) - Math.pow(a, 2) - Math.pow(c, 2)) / (-(2 * a * c));
+			// Mit Kosinus den Sinus berechnen
+				var sin_a = Math.sqrt(1 - Math.pow(cos_a, 2));
+				var sin_b = Math.sqrt(1 - Math.pow(cos_b, 2));
+			// Mit Sinus und Kosinus den Tangens berechnen
+				var tan_a = sin_a / cos_a;
+				var tan_b = sin_b / cos_b;
+				var anstieg = -tan_b;
+			// Mit dem Anstieg (Tangens), y = 0 und x = Länge der Seite c den Schnittpunkt von a mit der y-Achse berechnen
+				n = tan_b * c;
+
+			// x-Koordinate des Schnittpunkts von a und b berechnen
+			// Geradengleichungen gleichsetzen, also m1x + n1 = m2x + n2
+			// Da n von Seite b immer Null ist (sie geht durch (0|0), reicht m1x = m2x + n2
+			// Das führt zu m1x = m2x + n und schließlich zu x = n / m1 + m2 (weil m2 immer negativ ist, da Seite a monoton fällt)
+			var x = n / (tan_a + tan_b);
+			// y-Koordinate vom Schnittpunkt berechnen
+			// Dazu x in die Gleichung von Seite b einsetzen (weil da n = Null ist -> einfacher)
+			var y = tan_a * x;
+
+			// Dreieck zeichnen
+			var y_null = 200;
+			var x_null = 150;
+			var umrechnung = 40; // Faktor, um cm in Pixel umzurechnen
+			var s_x_pixel = x * umrechnung; // x-Koordinate des Schnittpunkts in Pixeln
+			var s_y_pixel = y * umrechnung; // y-Koordinate des Schnittpunkts in Pixeln
+			var B_x_pixel = c * umrechnung; // x-Koordinate von Punkt B (y = 0)
+
+			var canvas = document.getElementById("canvasLinie");
+			var context = canvas.getContext("2d");
+			context.clearRect(0, 0, 500, 200);
+			context.moveTo(x_null, y_null);
+			context.lineTo(x_null + s_x_pixel, y_null - s_y_pixel);
+			context.lineTo(x_null + B_x_pixel, y_null);
+			context.lineTo(x_null, y_null);
+			context.stroke();
+		}
+		// Sonst eine Fehlermeldung ausgeben
+		else {
+			var kontrolle = document.getElementById("kontrolle");
+			kontrolle.innerHTML = "Bitte vollstaendig ausfüllen!";
+		}
+	}
+</script>
+
+</body>
+</html>

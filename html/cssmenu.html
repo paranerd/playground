@@ -1,0 +1,91 @@
+<html>
+<head>
+	<style>
+		#menu {
+			position: absolute;
+			background-color: white;
+			width: 150px;
+		}
+
+		/* Menu */
+		ul.cssMenu, ul.cssMenu ul
+		{
+			list-style:none;
+			margin:0;
+			padding:0;
+			position: relative;
+			width: 150px;
+		}
+			
+		/* Style for 1st level menu header */
+		ul.cssMenu li { 
+			position: relative;
+		}
+
+		/* Building menu items - for 2nd and more level menu items*/
+		ul.cssMenu ul { 
+			display: none;
+			position: absolute;
+			width: 150px;	
+			top: 0;
+			left: 100%;
+		}
+
+		/* Menu item position for 3rd level and more */
+		ul.cssMenu ul ul { 
+			left: 100%; 
+			top: 0; 
+		}
+
+		/* Hover effect for menu*/
+		ul.cssMenu li:hover > ul { 
+			display:block;
+		}
+
+		ul.cssMenu div:hover > button {
+			background-color: #2E8B57;
+			color: white;
+		}
+		
+		.mButton {
+			position: relative;
+			width: 100%;
+			height: 40px;
+			text-align: left;
+		}
+		
+		.mButton:hover {
+			background-color: #2E8B57;
+			color: white;
+		}
+
+		.menuItems {
+			position: relative;
+		}
+	</style>
+</head>
+<body>
+	<div id="menu">
+		<ul class="cssMenu">
+			<li id="settings">
+				<div class="menuItems"">
+					<button class="mButton">First</button>
+				</div>
+				<ul class="cssMenu">
+					<button class="mButton">First_1</button>
+					<button class="mButton">First_2</button>
+				</ul>
+			</li>
+			<li>
+				<div class="menuItems">
+					<button class="mButton">Second</button>
+				</div>
+				<ul class="cssMenu">
+					<button class="mButton">Second_1</button>
+				</ul>
+			</li>
+		</ul>
+	</div>
+</body>
+
+</html>
