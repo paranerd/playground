@@ -77,6 +77,7 @@ def update_dns_record(zone_id, domain, ip):
 def show_help():
 	print("Usage:")
 	print("python3 cloudflare_dyndns.py domain1 [domain2] [domain3]...")
+	print("python3 cloudflare_dyndns.py foo.example.com *.bar.example.com")
 
 if __name__ == "__main__":
 	# Quit if no domain has been provided
