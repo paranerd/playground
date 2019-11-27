@@ -1,0 +1,53 @@
+<html>
+<head>
+	<title>My Progressive Web App</title>
+	<link rel="manifest" href="manifest.json">
+	<meta name="theme-color" content="#f00">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+	<h1>Chat</h1>
+	<p>Something in here from Development</p>
+	<button id="my-button">Click Me!</button>
+
+	<script>
+		let deferredPrompt = null;
+		if ('serviceWorker' in navigator) {
+			window.addEventListener('load', function() {
+				navigator.serviceWorker.register('service-worker.js').then(function(registration) {
+					// Registration was successful
+					console.log('Registered!');
+				}, function(err) {
+					// registration failed :(
+					console.log('ServiceWorker registration failed: ', err);
+				}).catch(function(err) {
+					console.log(err);
+				});
+			});
+		}
+		else {
+			console.log('service worker is not supported');
+		}
+
+		window.addEventListener('beforeinstallprompt', e => {
+			console.log('beforeinstallprompt Event fired');
+			e.preventDefault();
+			// Stash the event so it can be triggered later.
+			deferredPrompt = e;
+			return false;
+		});
+
+		let myButton = document.getElementById("my-button");
+		myButton.addEventListener('click', function() {
+			console.log("clicked");
+
+			deferredPrompt.prompt();
+				deferredPrompt.userChoice.then(choice => {
+					console.log(choice);
+			});
+
+			deferredPrompt = null;
+		});
+  </script>
+</body>
+</html>
