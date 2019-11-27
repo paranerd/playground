@@ -1,6 +1,6 @@
 {
-	"short_name": "Chat",
-	"name": "Chat",
+	"short_name": "PWA Hello World",
+	"name": "PWA Hello World",
 	"icons": [{
 		"src":"assets/icon.png",
 		"sizes": "512x512",
