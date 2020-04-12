@@ -31,8 +31,8 @@ get_public_ip() {
 
 	# Check if successful
 	if [ ! $IP_STATUS -eq 200 ]; then
-			echo "Error obtaining public IP [HTTP status: $IP_STATUS]" >> log.txt
-			exit 1
+		echo "Error obtaining public IP [HTTP status: $IP_STATUS]" >> log.txt
+		exit 1
 	fi
 
 	# Trim whitespace
@@ -57,16 +57,25 @@ update_dns_record() {
 
 	# Check if successful
 	if [ ! $DNS_STATUS -eq 200 ]; then
-			echo "Error [HTTP status: $DNS_STATUS]" >> log.txt
-			exit 1
+		echo "Error [HTTP status: $DNS_STATUS]" >> log.txt
+		exit 1
 	fi
+}
+
+get_records() {
+	DNS_RESPONSE=$(curl -X GET --write-out "HTTPSTATUS:%{http_code}" "${API_URL}/zones/${ZONE_ID}/dns_records" \
+	-H "X-Auth-Email: ${EMAIL}" \
+	-H "X-Auth-Key: ${API_KEY}" \
+	-H "Content-Type: application/json")
+
+	echo $DNS_RESPONSE
 }
 
 NEW_IP=$(get_public_ip)
 PREV_IP=$(cat ${IP_PATH})
 
 if [ "$NEW_IP" = "$PREV_IP" ]; then
-		exit 0
+	exit 0
 fi
 
 update_dns_record ${NEW_IP}
