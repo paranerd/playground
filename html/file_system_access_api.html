@@ -1,0 +1,182 @@
+<!-- https://github.com/GoogleChromeLabs/text-editor -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File System Access</title>
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            font-family: sans-serif;
+        }
+
+        #main {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #editor {
+            padding: 1rem;
+            height: 50%;
+            width: 50%;
+            border: 1px solid #ddd;
+            border-radius: 0.25rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        #actions {
+            margin-top: 1rem;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        button {
+            margin-left: .25rem;
+            margin-right: .25rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            height: 3rem;
+            min-width: 4rem;
+            border: none;
+            border-radius: .25rem;
+            background-color: #805ad5;
+            color: white;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            cursor: pointer;
+            background-color: #6b46c1;
+        }
+    </style>
+</head>
+<body>
+    <div id="main">
+        <h1>File System Access</h1>
+
+        <!-- Editor -->
+        <textarea id="editor"></textarea>
+
+        <!-- Action buttons -->
+        <div id="actions">
+            <button id="load">Load</button>
+            <button id="save">Save</button>
+            <button id="save-as">Save As</button>
+        </div>
+    </div>
+
+    <script>
+        let editor;
+
+        window.onload = function() {
+            editor = new Editor();
+            init();
+        }
+
+        function init() {
+            const btnLoad = document.getElementById("load");
+            const btnSave = document.getElementById("save");
+            const btnSaveAs = document.getElementById("save-as");
+            const ed = document.getElementById("editor");
+
+            btnLoad.addEventListener('click', async () => {
+                const content = await editor.load();
+                ed.value = content;
+            });
+
+            btnSave.addEventListener('click', async () => {
+                await editor.save(ed.value);
+            });
+
+            btnSaveAs.addEventListener('click', async () => {
+                await editor.saveAs(ed.value);
+            });
+        }
+
+        class Editor {
+            fileHandle;
+
+            constructor() {}
+
+            async load() {
+                // Choose file
+                [this.fileHandle] = await window.showOpenFilePicker();
+
+                // Get content
+                const file = await this.fileHandle.getFile();
+                const content = await file.text();
+
+                // Show content
+                return content;
+            }
+
+            async save(content) {
+                return this._write(this.fileHandle, content);
+            }
+
+            async saveAs(content) {
+                const fileHandle = await this._getNewFileHandle();
+                return this._write(fileHandle, content);
+            }
+
+            async _write(fileHandle, content) {
+                const writable = await fileHandle.createWritable();
+                writable.write(content);
+
+                await writable.close();
+            }
+
+            async _hasPermission(fileHandle, read = false, write = false) {
+                const options = {};
+
+                if (read) {
+                    options.mode = 'read';
+                }
+                if (write) {
+                    options.mode = 'readwrite';
+                }
+
+                // Check if permission was already granted. If so, return true.
+                if ((await fileHandle.queryPermission(options)) === 'granted') {
+                    return true;
+                }
+
+                // Request permission. If the user grants permission, return true.
+                if ((await fileHandle.requestPermission(options)) === 'granted') {
+                    return true;
+                }
+
+                // The user didn't grant permission, so return false.
+                return false;
+            }
+
+            async _getNewFileHandle() {
+                const options = {
+                    types: [
+                    {
+                        description: 'Text Files',
+                        accept: {
+                        'text/plain': ['.txt'],
+                        },
+                    },
+                    ],
+                };
+                const handle = await window.showSaveFilePicker(options);
+                return handle;
+                }
+        }
+    </script>
+</body>
+</html>
