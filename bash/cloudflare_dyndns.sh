@@ -15,6 +15,7 @@ DNS_RECORD_NAME="<your_dns_record_name>" # e.g. foo.example.com
 # Set path to IP-storage
 SCRIPT=`readlink -f $0`
 IP_PATH=/tmp/public_ip
+LOG_PATH=/tmp/update_ip.log
 
 get_public_ip() {
 	# Fetch public IP
@@ -31,7 +32,7 @@ get_public_ip() {
 
 	# Check if successful
 	if [ ! $IP_STATUS -eq 200 ]; then
-		echo "Error obtaining public IP [HTTP status: $IP_STATUS]" >> /tmp/update_ip.log
+		echo "Error obtaining public IP [HTTP status: $IP_STATUS]" >> $LOG_PATH
 		exit 1
 	fi
 
@@ -57,7 +58,7 @@ update_dns_record() {
 
 	# Check if successful
 	if [ ! $DNS_STATUS -eq 200 ]; then
-		echo "Error [HTTP status: $DNS_STATUS]" >> log.txt
+		echo "Error [HTTP status: $DNS_STATUS]" >> $LOG_PATH
 		exit 1
 	fi
 }
