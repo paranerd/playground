@@ -57,7 +57,7 @@ update_dns_record() {
 
 	# Check if successful
 	if [ ! $DNS_STATUS -eq 200 ]; then
-		echo "Error [HTTP status: $DNS_STATUS]" >> log.txt
+		echo "Error [HTTP status: $DNS_STATUS]" >> /tmp/update_ip.log
 		exit 1
 	fi
 }
