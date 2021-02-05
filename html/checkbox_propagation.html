@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        input[type='checkbox'] {
+            -webkit-appearance: none;
+            background-color: #fafafa;
+            border: 1px solid #cacece;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px -15px 10px -12px rgba(0,0,0,0.05);
+            padding: 9px;
+            border-radius: 3px;
+            display: inline-block;
+            position: relative;
+        }
+
+        input[type='checkbox']:active,
+        input[type='checkbox']:checked:active {
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px 1px 3px rgba(0,0,0,0.1);
+        }
+
+        input[type='checkbox']:checked {
+            background-color: #20639b;
+            border: 1px solid #adb8c0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px -15px 10px -12px rgba(0,0,0,0.05), inset 15px 10px -12px rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        input[type='checkbox']:checked:after {
+            content: '\2714';
+            font-size: 14px;
+            position: absolute;
+            top: 0px;
+            left: 3px;
+            color: white;
+        }
+
+        .input-with-label {
+            display: flex;
+            align-items: center;
+        }
+
+        .semi-checked {
+            background-color: #20639b !important;
+        }
+
+        label {
+            margin-left: .25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="input-with-label"><input id="shoes" type="checkbox" data-cb-parent=""/><label>Shoes</label></div>
+    <div class="input-with-label"><input id="blue-shoe" type="checkbox" data-cb-parent="shoes" /><label>Blue Shoe</label></div>
+    <div class="input-with-label"><input id="blue-shoe-size-45" type="checkbox" data-cb-parent="blue-shoe" /><label>Blue Shoe Size 45</label></div>
+    <div class="input-with-label"><input id="blue-shoe-size-46" type="checkbox" data-cb-parent="blue-shoe" /><label>Blue Shoe Size 46</label></div>
+    <div class="input-with-label"><input id="red-shoe" type="checkbox" data-cb-parent="shoes" /><label>Red Shoe</label></div>
+    <div class="input-with-label"><input id="green-shoe" type="checkbox" data-cb-parent="shoes" /><label>Green Shoe</label></div>
+
+    <script>
+        document.querySelectorAll('input[data-cb-parent]').forEach(cb => {
+            cb.addEventListener('change', e => {
+                checkboxBubbleDown(e.target, e.target.checked);
+                checkboxBubbleUp(e.target, e.target.checked);
+            });
+        });
+
+        /**
+         * Bubble up checked state
+         *
+         * @param {HTMLElement} elem
+         */
+        function checkboxBubbleUp(elem, checked) {
+            const parent = document.getElementById(elem.dataset.cbParent);
+            const children = Array.prototype.slice.call(
+                                document.querySelectorAll(`input[data-cb-parent="${elem.id}"]`)
+                            );
+
+            // If we're supposed to check but there's at least one child unchecked,
+            // mark as semi-checked
+            if (children.some(c => !c.checked)) {
+                elem.checked = false;
+                elem.classList.add('semi-checked');
+            }
+            else {
+                elem.classList.remove('semi-checked');
+                elem.checked = checked;
+            }
+
+            if (parent && parent != elem) {
+                checkboxBubbleUp(parent, checked);
+            }
+        }
+
+        /**
+         * Bubble down checked state
+         *
+         * @param {HTMLElement} elem
+         */
+        function checkboxBubbleDown(elem, checked) {
+            const children = document.querySelectorAll(`input[data-cb-parent="${elem.id}"]`);
+
+            children.forEach(child => {
+                child.checked = checked;
+                checkboxBubbleDown(child, checked);
+            });
+        }
+    </script>
+</body>
+</html>
