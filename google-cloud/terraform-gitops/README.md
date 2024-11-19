@@ -1,3 +1,7 @@
+# Google Cloud Snippets: GCP Terraform GitOps
+
+How to automatically and continuously deploy Google Cloud infrastructure with Terraform from a Git repository.
+
 Based on the [official documentation](https://cloud.google.com/docs/terraform/resource-management/managing-infrastructure-as-code)
 
 ## Prerequisites
