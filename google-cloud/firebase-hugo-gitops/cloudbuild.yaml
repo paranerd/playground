@@ -1,0 +1,25 @@
+steps:
+- name: 'gcr.io/cloud-builders/curl'
+  args:
+  - '-L'
+  - 'https://firebase.tools/bin/linux/latest'
+  - '-o'
+  - '/workspace/firebase'
+- name: 'gcr.io/cloud-builders/curl'
+  args:
+  - '-L'
+  - 'https://github.com/gohugoio/hugo/releases/download/v${_HUGO_VERSION}/hugo_extended_${_HUGO_VERSION}_Linux-64bit.tar.gz'
+  - '-o'
+  - '/workspace/hugo.tar.gz'
+- name: 'ubuntu:24.04'
+  args:
+  - 'bash'
+  - '-c'
+  - |
+    tar -xvf /workspace/hugo.tar.gz
+    chmod 755 /workspace/firebase
+    cd my-site/
+    /workspace/hugo
+    /workspace/firebase deploy --project $PROJECT --non-interactive --only hosting -m "Build ${BUILD_ID}"
+options:
+  logging: CLOUD_LOGGING_ONLY
