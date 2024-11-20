@@ -1,0 +1,5 @@
+steps:
+- name: 'gcr.io/cloud-builders/gsutil'
+  args: ['-m', 'rsync', '-r', 'src/', 'gs://$_BUCKET_NAME']
+options:
+  logging: CLOUD_LOGGING_ONLY
