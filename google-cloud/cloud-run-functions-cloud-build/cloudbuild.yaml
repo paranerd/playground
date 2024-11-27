@@ -6,7 +6,6 @@ steps:
   - deploy
   - hello-1
   - --region=europe-west3
-  - --source=.
   - --trigger-http
   - --runtime=nodejs22
   - --allow-unauthenticated
