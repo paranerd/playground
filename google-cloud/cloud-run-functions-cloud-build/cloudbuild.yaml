@@ -17,7 +17,6 @@ steps:
   - --trigger-http
   - --runtime=nodejs22
   - --allow-unauthenticated
-  - --source=/google-cloud/cloud-run-functions-cloud-build/
-  - --verbosity=debug
+  - --source=google-cloud/cloud-run-functions-cloud-build/
 options:
   logging: CLOUD_LOGGING_ONLY
