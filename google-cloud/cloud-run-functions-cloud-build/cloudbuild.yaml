@@ -17,5 +17,6 @@ steps:
   - --trigger-http
   - --runtime=nodejs22
   - --allow-unauthenticated
+  - --verbosity="debug"
 options:
   logging: CLOUD_LOGGING_ONLY
