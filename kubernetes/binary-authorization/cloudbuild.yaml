@@ -1,0 +1,25 @@
+steps:
+  - id: 'pull-image'
+    name: 'gcr.io/cloud-builders/docker'
+    args: ['pull', 'nginx']
+  - id: 'tag-image'
+    name: 'gcr.io/cloud-builders/docker'
+    args: ['tag', 'nginx', '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/hello-world/nginx']
+  - id: 'push-image'
+    name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/hello-world/nginx']
+  - id: 'create-attestation'
+    name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
+    args:
+      - '--artifact-url'
+      - '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/hello-world/nginx'
+      - '--attestor'
+      - 'projects/${PROJECT_ID}/attestors/${_ATTESTOR_NAME}'
+      - '--keyversion'
+      - 'projects/${PROJECT_ID}/locations/${_KMS_KEY_LOCATION}/keyRings/${_KMS_KEYRING_NAME}/cryptoKeys/${_KMS_KEY_NAME}/cryptoKeyVersions/${_KMS_KEY_VERSION}'
+substitutions:
+  _ATTESTOR_NAME: 'my-attestor'
+  _KMS_KEY_LOCATION: 'global'
+  _KMS_KEYRING_NAME: 'my-binauthz-keyring'
+  _KMS_KEY_NAME: 'my-binauthz-kms-key-name'
+  _KMS_KEY_VERSION: '1'
