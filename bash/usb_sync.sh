@@ -79,7 +79,7 @@ fi
 #    "$MOUNT_POINT/": syncs into the *root* of the mounted drive
 echo "Starting rsync synchronization from '$SOURCE_DIR' to '$MOUNT_POINT'..."
 rsync_result=0 # Initialize rsync_result
-sudo rsync -avh --progress --delete "${RSYNC_EXCLUDES[@]}" "$SOURCE_DIR/" "$MOUNT_POINT/"
+sudo rsync -avh --progress --delete --delete-excluded "${RSYNC_EXCLUDES[@]}" "$SOURCE_DIR/" "$MOUNT_POINT/"
 rsync_result=$? # Capture the exit status of rsync
 
 if [ $rsync_result -eq 0 ]; then
